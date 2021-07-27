@@ -4,9 +4,12 @@ import discord
 import time
 import math
 
+guessing_game_channel_lock = {}
+
 class GuessingGame():
     def __init__(self, channel, bot, author) -> None:
         self.channel = channel
+
         self.character_index = random.choice(range(len(CHARACTER_DATBASE)))
         self.bot = bot
         self.author = author
@@ -18,7 +21,7 @@ class GuessingGame():
         self.points = 0
         self.attempts = 3
 
-        self.check_guess = lambda m: m.channel == self.channel #and m.author == self.author
+        self.check_guess = lambda message: message.channel == self.channel and not message.author.bot
 
     async def send_question_embed(self):
         embed = discord.Embed(title="Who's that 2hu?", color = 0x3B88C3, description="Guess by typing the character's name in chat.")
@@ -39,29 +42,42 @@ class GuessingGame():
         embed.set_image(url=self.char["image"])
         await self.channel.send(embed=embed)
 
+    async def send_game_already_running(self):
+        await self.channel.send("Game already running!")
+
+    def end_game(self):
+        del guessing_game_channel_lock[self.channel.id]
+
     async def start(self) -> None:
+        if self.channel.id in guessing_game_channel_lock:
+            await self.send_game_already_running()
+            return
+        else:
+            guessing_game_channel_lock[self.channel.id] = True
+
         start = time.time()
         await self.send_question_embed()
 
         while True:
-
             msg = await self.bot.wait_for('message', check=self.check_guess)
             end = time.time()
 
             if msg.content.lower() == self.char["name"].lower() or msg.content.lower() == f"{self.char_name_array[1]} {self.char_name_array[0]}":
                 self.points = math.floor(max(1, 10 - (end - start))) * 2 + (self.attempts - 1) * 3
+                self.end_game()
                 await self.send_correct_guess_embed(msg)
                 break
 
             elif msg.content.lower() in self.char_name_array:
                 self.points = math.floor(max(1, 10 - (end - start) - 3))
+                self.end_game()
                 await self.send_correct_guess_embed(msg)
                 break
 
-            self.attempts -= 1
+            # self.attempts -= 1
 
             if self.attempts == 0:
                 await self.send_incorrect_guess_embed()
                 break
 
-            await self.send_incorrect_guess_warning_embed()
+            # await self.send_incorrect_guess_warning_embed()
