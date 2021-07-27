@@ -12,10 +12,11 @@ def create_silhouette(img, name):
 
     x = np.array(image)
     r, g, b, a = np.rollaxis(x, axis=-1)
-    r[a!=0] = 0
-    g[a!=0] = 0
-    b[a!=0] = 0
+    r.fill(0)
+    g.fill(0)
+    b.fill(0)
     x = np.dstack([r, g, b, a])
+    
     image = Image.fromarray(x, 'RGBA')
     name = hash_character_name(name)
     image.save(f"data/silhouettes/{name}.png", 'PNG')
