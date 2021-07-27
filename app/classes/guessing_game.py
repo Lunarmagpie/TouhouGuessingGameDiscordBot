@@ -3,6 +3,7 @@ import random
 import discord
 import time
 import math
+import asyncio
 
 guessing_game_channel_lock = {}
 
@@ -59,7 +60,13 @@ class GuessingGame():
         await self.send_question_embed()
 
         while True:
-            msg = await self.bot.wait_for('message', check=self.check_guess)
+
+            try:
+                msg = await self.bot.wait_for('message', check=self.check_guess, timeout = 10 - (time.time() - start))
+            except asyncio.TimeoutError:
+                await self.send_incorrect_guess_embed()
+                self.end_game()
+
             end = time.time()
 
             if msg.content.lower() == self.char["name"].lower() or msg.content.lower() == f"{self.char_name_array[1]} {self.char_name_array[0]}":
