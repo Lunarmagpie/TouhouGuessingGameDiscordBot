@@ -16,20 +16,19 @@ class Bot(commands.Bot):
 
     def run(self):
         print("Touhou Bot!")
-        return super().run(os.environ["token"])
+        return super().run(os.environ["thtoken"])
 
 
     async def on_message(self, message: discord.Message):
         if message.author.bot:
             return
-
         if not message.guild:
             return
 
-        if message.guild.id != self.config.mcoding_server_id:
-            return
-
-        await self.process_commands(message)
+        try:
+            await self.process_commands(message)
+        except Exception:
+            pass
 
     async def on_connect(self):
         print(f"Logged in as {self.user} after {time.perf_counter():,.3f}s")
