@@ -63,7 +63,7 @@ class GuessingGame():
 
             try:
                 msg = await self.bot.wait_for('message', check=self.check_guess, timeout = 10 - (time.time() - start))
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 await self.send_incorrect_guess_embed()
                 self.end_game()
 
