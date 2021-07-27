@@ -12,6 +12,11 @@ class Bot(commands.Bot):
             if filename.endswith("py"):
                 self.load_extension(f"app.cogs.{filename[:-3]}")
 
+    def run(self):
+        print("Touhou Bot!")
+        return super().run(os.environ["token"])
+
+
     async def on_message(self, message: discord.Message):
         if message.author.bot:
             return
