@@ -1,5 +1,5 @@
 from app.config import CHARACTER_DATBASE
-from app.util import has_character_name
+from app.util import hash_character_name
 from PIL import Image
 import PIL
 import numpy as np
@@ -17,7 +17,7 @@ def create_silhouette(img, name):
     b[a!=0] = 0
     x = np.dstack([r, g, b, a])
     image = Image.fromarray(x, 'RGBA')
-    name = has_character_name(name)
+    name = hash_character_name(name)
     image.save(f"data/silhouettes/{name}.png", 'PNG')
 
 def center(img, name):
