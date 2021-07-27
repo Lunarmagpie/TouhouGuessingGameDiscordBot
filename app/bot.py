@@ -3,6 +3,7 @@ from discord.ext import commands
 
 import time
 import os
+from . import config
 
 class Bot(commands.Bot):
     def __init__(self) -> None:
