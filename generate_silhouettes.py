@@ -3,6 +3,7 @@ from PIL import Image
 import PIL
 import numpy as np
 import requests
+import math
 
 
 def create_silhouette(img, name):
@@ -16,6 +17,23 @@ def create_silhouette(img, name):
     x = np.dstack([r, g, b, a])
     image = Image.fromarray(x, 'RGBA')
     image.save(f"data/silhouettes/{name}.png", 'PNG')
+
+def center(img, name):
+    image = Image.open(requests.get(img, stream=True).raw)
+
+    color = (0, 0, 0, 0)
+    width, height = image.size
+    new_width = math.floor(height * 1.03)
+    new_height = height
+
+    left = math.floor((new_width - width) / 2)
+    top = 0
+
+    result = Image.new(image.mode, (new_width, new_height), color)
+    result.paste(image, (left, top))
+
+    result.save(f"data/images/{name}.png", 'PNG')
+    return result
 
 for char in CHARACTER_DATBASE:
     create_silhouette(char['image'], char['name'])
