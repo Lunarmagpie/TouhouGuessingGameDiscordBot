@@ -7,7 +7,7 @@ class TemplateCog(commands.Cog):
         self.bot = bot
 
     @commands.command()
-    async def hello(self,ctx):
+    async def start(self,ctx):
         g = GuessingGame(ctx.channel)
         await g.start()
 
