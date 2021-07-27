@@ -10,9 +10,11 @@ for filepath in glob.glob("data/images/*.png"):
     filename = p.name
     char_name = filename.split(".")[0]
     img = f"https://raw.githubusercontent.com/Drakomire/TouhouGuessingGameDiscordBot/main/data/images/{urllib.parse.quote(filename)}"
+    s_img = f"https://raw.githubusercontent.com/Drakomire/TouhouGuessingGameDiscordBot/main/data/silhouettes/{urllib.parse.quote(filename)}"
 
 
     CHARACTER_DATBASE += [{
         "name" : char_name,
-        "image" : img
+        "image" : img,
+        "silhouette" : s_img
     }]
