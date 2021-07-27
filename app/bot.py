@@ -6,7 +6,9 @@ import os
 
 class Bot(commands.Bot):
     def __init__(self) -> None:
-        super().__init__()
+        super().__init__(
+            command_prefix=commands.when_mentioned_or("t.")
+        )
 
         for filename in os.listdir(os.path.join("app", "cogs")):
             if filename.endswith("py"):
@@ -30,4 +32,4 @@ class Bot(commands.Bot):
         await self.process_commands(message)
 
     async def on_connect(self):
-        self.log(f"Logged in as {self.user} after {time.perf_counter():,.3f}s")
+        print(f"Logged in as {self.user} after {time.perf_counter():,.3f}s")
