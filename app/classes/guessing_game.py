@@ -1,6 +1,8 @@
 from ..config import CHARACTER_DATBASE
 import random
 import discord
+import time
+import math
 
 class GuessingGame():
     def __init__(self, channel, bot, author) -> None:
@@ -11,16 +13,55 @@ class GuessingGame():
 
         self.char = CHARACTER_DATBASE[self.character_index]
 
-    async def start(self) -> None:
-        embed = discord.Embed(title="Who's that 2hu?")
+        self.char_name_array = self.char["name"].lower().split(" ")
+
+        self.points = 0
+        self.attempts = 3
+
+        self.check_guess = lambda m: m.channel == self.channel #and m.author == self.author
+
+    async def send_question_embed(self):
+        embed = discord.Embed(title="Who's that 2hu?", color = 0x3B88C3, description="Guess by typing the character's name in chat.")
         embed.set_image(url=self.char["silhouette"])
         await self.channel.send(embed=embed)
 
-        def check(m):
-            return m.content.lower() == self.char["name"].lower() and m.channel == self.channel and m.author == self.author
+    async def send_correct_guess_embed(self, msg):
+        embed = discord.Embed(title=f"Correct!", color = 0x78B159, description=f"The character is **{self.char['name']}**.\n {msg.author.mention} has gained {self.points} point{'s' if self.points != 1 else ''}.")
+        embed.set_image(url=self.char["image"])
+        await self.channel.send(embed=embed)
 
-        msg = await self.bot.wait_for('message', check=check)
+    async def send_incorrect_guess_warning_embed(self):
+        embed = discord.Embed(title=f"🛑 Incorrect! {self.attempts} Attempt{'s' if self.attempts != 1 else ''} remaining.", color = 0xDD2E44)
+        await self.channel.send(embed=embed)
 
-        responseEmbed = discord.Embed(title=f"Correct!", description=f"The character is **{self.char['name']}**.\n {self.author.mention} has gained 1 point.")
-        responseEmbed.set_image(url=self.char["image"])
-        await self.channel.send(embed=responseEmbed)
+    async def send_incorrect_guess_embed(self):
+        embed = discord.Embed(title=f"Attempts are up!", color = 0xDD2E44, description=f"The character is **{self.char['name']}**.")
+        embed.set_image(url=self.char["image"])
+        await self.channel.send(embed=embed)
+
+    async def start(self) -> None:
+        start = time.time()
+        await self.send_question_embed()
+
+        while True:
+
+            msg = await self.bot.wait_for('message', check=self.check_guess)
+            end = time.time()
+
+            if msg.content.lower() == self.char["name"].lower() or msg.content.lower() == f"{self.char_name_array[1]} {self.char_name_array[0]}":
+                self.points = math.floor(max(1, 10 - (end - start))) * 2 + (self.attempts - 1) * 3
+                await self.send_correct_guess_embed(msg)
+                break
+
+            elif msg.content.lower() in self.char_name_array:
+                self.points = math.floor(max(1, 10 - (end - start) - 3))
+                await self.send_correct_guess_embed(msg)
+                break
+
+            self.attempts -= 1
+
+            if self.attempts == 0:
+                await self.send_incorrect_guess_embed()
+                break
+
+            await self.send_incorrect_guess_warning_embed()
