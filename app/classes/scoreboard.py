@@ -13,7 +13,7 @@ class Scoreboard(Database):
         if res.count() >= 1:
             player = res[0]
             print(player)
-            self.update_player_score(player_id,score+player["score"])
+            self.update_player_score(player_id,score+player["score"],player["games_won"]+1)
         else:
             self.create_new_player_with_score(player_id,score)
 
@@ -24,13 +24,13 @@ class Scoreboard(Database):
             "games_won" : 1,
         })
     
-    def update_player_score(self,player_id,score):
+    def update_player_score(self,player_id,score,games_won):
         self.table.update_one(
         {"player_id":player_id},
         {
             "$set":{
                 "player_id" : player_id,
                 "score" : score,
-                "games_won" : 1,
+                "games_won" : games_won,
             }
         })
