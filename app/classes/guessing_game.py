@@ -29,16 +29,17 @@ class GuessingGame():
 
         self.points = 0
         self.attempts = 3
+        self.winners = []
 
         self.check_guess = lambda message: message.channel == self.channel and not message.author.bot
 
-    async def check_guess_oppponent(self, message):
-        if opponent != None:
-            return self.check_guess and (message.author == opponent or message.author == self.author)
+    def check_guess_oppponent(self, message):
+        if self.opponent != None:
+            return self.check_guess and (message.author.id == self.opponent or message.author == self.author)
         return self.check_guess
 
-    async def send_question_embed(self):
-        embed = discord.Embed(title="Who's that 2hu?", color = 0x3B88C3, description="Guess by typing the character's name in chat.")
+    async def send_question_embed(self, title):
+        embed = discord.Embed(title=title, color = 0x3B88C3, description="Guess by typing the character's name in chat.")
         embed.set_image(url=self.char["silhouette"])
         print(self.char["silhouette"])
         await self.channel.send(embed=embed)
@@ -54,7 +55,7 @@ class GuessingGame():
         await self.channel.send(embed=embed)
 
     async def send_incorrect_guess_embed(self):
-        embed = discord.Embed(title=f"Time is up!", color = 0xDD2E44, description=f"The character is **{self.char['name']}**.")
+        embed = discord.Embed(title=f"Time's up!", color = 0xDD2E44, description=f"The character is **{self.char['name']}**.")
         embed.set_image(url=self.char["image"])
         await self.channel.send(embed=embed)
 
@@ -64,7 +65,8 @@ class GuessingGame():
     def end_game(self):
         del guessing_game_channel_lock[self.channel.id]
 
-    async def start(self, opponent=None) -> None:
+    async def start(self, opponent=None, custom_title="Who's that 2hu?") -> None:
+        self.opponent = opponent
         if self.channel.id in guessing_game_channel_lock:
             await self.send_game_already_running()
             return
@@ -72,7 +74,7 @@ class GuessingGame():
             guessing_game_channel_lock[self.channel.id] = True
 
         start = time.time()
-        await self.send_question_embed()
+        await self.send_question_embed(custom_title)
 
         while True:
 
@@ -88,7 +90,12 @@ class GuessingGame():
             if msg.content.lower() == self.char["name"].lower() or msg.content.lower() == self.jp_char_name.lower():
                 self.points = math.floor(max(1, 10 - (end - start))) * 2 + (self.attempts - 1) * 3
                 self.end_game()
+                self.winners.append(msg.author.id)
                 await self.send_correct_guess_embed(msg)
+
+                #add score to database
+                scoreboard = Scoreboard()
+                scoreboard.add_to_player_score(msg.author, self.points)
                 break
 
             # elif msg.content.lower() in self.char_name_array:
@@ -99,8 +106,8 @@ class GuessingGame():
 
             # self.attempts -= 1
 
-            if self.attempts == 0:
-                await self.send_incorrect_guess_embed()
-                break
+            # if self.attempts == 0:
+            #     await self.send_incorrect_guess_embed()
+            #     break
 
             await self.send_incorrect_guess_warning_embed()
