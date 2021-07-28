@@ -1,5 +1,5 @@
 from ..config import CHARACTER_DATBASE
-from .score_table import Scoreboard
+from .scoreboard import Scoreboard
 import random
 import discord
 import time

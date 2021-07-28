@@ -1,13 +1,16 @@
 from .database import Database
+import discord
 
 class Scoreboard(Database):
     def __init__(self) -> None:
         super().__init__("score", "score")
     
-    def add_to_player_score(self,player_id: int,score: int) -> None:
+    def add_to_player_score(self,user: discord.User,score: int) -> None:
         """
         Adds to a user scores and increments games won by one
         """
+        player_id = user.id
+
         res = self.table.find({"player_id":player_id})
 
         if res.count() >= 1:
