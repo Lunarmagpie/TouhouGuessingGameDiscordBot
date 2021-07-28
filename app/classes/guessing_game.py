@@ -1,4 +1,5 @@
 from ..config import CHARACTER_DATBASE
+from .score_table import Scoreboard
 import random
 import discord
 import time
@@ -6,6 +7,7 @@ import math
 import asyncio
 
 guessing_game_channel_lock = {}
+scoreboard = Scoreboard()
 
 class GuessingGame():
     def __init__(self, channel, bot, author) -> None:
