@@ -14,8 +14,8 @@ class Guess(commands.Cog):
         await g.start()
 
     @commands.command()
-    async def challenge(self,ctx,*args):
-        g = Challenge(ctx.channel, self.bot, ctx.author, *args)
+    async def challenge(self,ctx,user: discord.User=None):
+        g = Challenge(ctx.channel, self.bot, ctx.author, user)
         await g.challenge()
 
     @commands.command()

@@ -89,7 +89,7 @@ class GuessingGame():
             if msg.content.lower() == self.char["name"].lower() or msg.content.lower() == self.jp_char_name.lower():
                 self.points = math.floor(max(1, 10 - (end - start))) * 2 + (self.attempts - 1) * 3
                 self.end_game()
-                self.winners.append(msg.author.id)
+                self.winners.append(msg.author)
                 await self.send_correct_guess_embed(msg)
 
                 #add score to database
