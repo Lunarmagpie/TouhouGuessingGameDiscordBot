@@ -9,7 +9,7 @@ class Scoreboard(Database):
         """
         Adds to a user scores and increments games won by one
         """
-        player_id = user.id
+        player_id = int(user.id)
 
         res = self.table.find({"player_id":player_id})
 
