@@ -32,6 +32,11 @@ class GuessingGame():
 
         self.check_guess = lambda message: message.channel == self.channel and not message.author.bot
 
+    async def check_guess_oppponent(self, message):
+        if opponent != None:
+            return self.check_guess and (message.author == opponent or message.author == self.author)
+        return self.check_guess
+
     async def send_question_embed(self):
         embed = discord.Embed(title="Who's that 2hu?", color = 0x3B88C3, description="Guess by typing the character's name in chat.")
         embed.set_image(url=self.char["silhouette"])
@@ -59,7 +64,7 @@ class GuessingGame():
     def end_game(self):
         del guessing_game_channel_lock[self.channel.id]
 
-    async def start(self) -> None:
+    async def start(self, opponent=None) -> None:
         if self.channel.id in guessing_game_channel_lock:
             await self.send_game_already_running()
             return
@@ -72,7 +77,7 @@ class GuessingGame():
         while True:
 
             try:
-                msg = await self.bot.wait_for('message', check=self.check_guess, timeout = 20 - (time.time() - start))
+                msg = await self.bot.wait_for('message', check=self.check_guess_oppponent, timeout = 20 - (time.time() - start))
             except asyncio.TimeoutError:
                 await self.send_incorrect_guess_embed()
                 self.end_game()
