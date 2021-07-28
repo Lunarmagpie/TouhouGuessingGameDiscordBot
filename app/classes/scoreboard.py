@@ -1,6 +1,9 @@
 from .database import Database
 import discord
 
+class UserNotFoundError(Exception):
+    pass
+
 class Scoreboard(Database):
     def __init__(self) -> None:
         super().__init__("score", "score")
@@ -37,3 +40,13 @@ class Scoreboard(Database):
                 "games_won" : games_won,
             }
         })
+
+    def get_player_information(self, user: discord.User):
+        player_info = self.table.find_one({
+            "player_id": user.id
+        })
+
+        if player_info is None:
+            raise UserNotFoundError
+
+        return player_info

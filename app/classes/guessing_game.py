@@ -1,5 +1,5 @@
 from ..config import CHARACTER_DATBASE
-from .scoreboard import Scoreboard
+from app.util import scoreboard
 import random
 import discord
 import time
@@ -7,7 +7,6 @@ import math
 import asyncio
 
 guessing_game_channel_lock = {}
-scoreboard = Scoreboard()
 
 class GuessingGame():
     def __init__(self, channel, bot, author) -> None:
@@ -94,7 +93,6 @@ class GuessingGame():
                 await self.send_correct_guess_embed(msg)
 
                 #add score to database
-                scoreboard = Scoreboard()
                 scoreboard.add_to_player_score(msg.author, self.points)
                 break
 

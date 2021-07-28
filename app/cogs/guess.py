@@ -3,7 +3,6 @@ from discord.ext import commands
 from app.bot import Bot
 from app.classes.guessing_game import GuessingGame
 from app.classes.challenge import Challenge
-from app.classes.player import Player
 
 class Guess(commands.Cog):
     def __init__(self, bot: "Bot"):
@@ -18,11 +17,6 @@ class Guess(commands.Cog):
     async def challenge(self,ctx,*args):
         g = Challenge(ctx.channel, self.bot, ctx.author, *args)
         await g.challenge()
-
-    @commands.command()
-    async def profile(self,ctx,*args):
-        g = Player(ctx.channel, self.bot, ctx.author, *args)
-        await g.profile()
 
     @commands.command()
     async def leaderboard(self,ctx,*args):
