@@ -17,7 +17,6 @@ DANCE_GIFS = [
     "https://media1.tenor.com/images/a0c95eded5fbb4f78bcee8434d2a7338/tenor.gif?itemid=16765090",
     "https://thumbs.gfycat.com/WearyGreatGreathornedowl-max-1mb.gif",
     "https://moriyashrine.org/uploads/monthly_2018_09/2hu.gif.66e48f662f142d94cc6b03efee49bb14.gif",
-
 ]
 
 class Challenge(GuessingGame):

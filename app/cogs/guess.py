@@ -37,6 +37,7 @@ class Guess(commands.Cog):
             description=f"Optional parameters are (surrounded by parentheses)."
         )
         embed.add_field(name="t.start", value="Start a guessing game.", inline="True")
+        embed.add_field(name="t.stop", value="Stop a guessing game (does not work in challenge mode).", inline="True")
         embed.add_field(name="t.endless", value="Start an endless guessing game.", inline="True")
         embed.add_field(name="t.challenge (@user)", value="Play 5 guessing games against another player.", inline="True")
         embed.add_field(name="t.profile (@user)", value="Show a player's stats, or yours if not specified.", inline="True")
