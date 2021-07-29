@@ -24,7 +24,6 @@ class Scoreboard(Database):
         tmp["player_id"] = player_id
         return tmp
 
-
     def get_player(self,player_id):
         res = self.table.find({"player_id":player_id})
         if res.count() >= 1:
@@ -35,9 +34,6 @@ class Scoreboard(Database):
             return base_player
 
     def update_attr(self,user: discord.User,attr: str, increment: int) -> None:
-        """
-        Adds to a user scores and increments games won by one
-        """
         player_id = user.id
         player = self.get_player(player_id)
         self.table.update_one(
@@ -62,5 +58,4 @@ class Scoreboard(Database):
 
     def get_player_information(self, user: discord.User) -> dict:
         player_info = self.get_player(user.id)
-
         return player_info

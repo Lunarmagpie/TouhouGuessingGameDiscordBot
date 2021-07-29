@@ -12,7 +12,7 @@ class Challenge(GuessingGame):
     def __init__(self, channel, bot, author, user):
         super().__init__(channel, bot, author)
         self.opponent = user
-
+        self.can_stop_game = False
         self.check_is_opponent = lambda message: message.channel == self.channel and message.author.id == self.opponent.id
 
     async def start_full_game(self, title):

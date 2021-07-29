@@ -30,6 +30,7 @@ class GuessingGame():
         self.attempts = 3
         self.winners = []
         self.opponent = None
+        self.can_stop_game = True
 
         self.check_guess = lambda message: message.channel == self.channel and not message.author.bot
 
@@ -58,6 +59,11 @@ class GuessingGame():
         embed.set_image(url=self.char["image"])
         await self.channel.send(embed=embed)
 
+    async def send_game_ended_by_user_embed(self):
+        embed = discord.Embed(title=f"The game was ended!", color = 0x3B88C3, description=f"The character is **{self.char['name']}**.")
+        embed.set_image(url=self.char["image"])
+        await self.channel.send(embed=embed)
+
     async def send_game_already_running(self):
         await self.channel.send("Game already running!")
 
@@ -75,7 +81,6 @@ class GuessingGame():
         await self.send_question_embed(custom_title)
 
         while True:
-
             try:
                 msg = await self.bot.wait_for('message', check=self.check_guess_oppponent, timeout = 20 - (time.time() - start))
             except asyncio.TimeoutError:
@@ -85,30 +90,22 @@ class GuessingGame():
 
             end = time.time()
 
-            scoreboard.update_attr(msg.author, "guesses", 1)
-
-            if msg.content.lower() == self.char["name"].lower() or msg.content.lower() == self.jp_char_name.lower():
+            if msg.content == "t.stop" and self.can_stop_game:
+                await self.send_game_ended_by_user_embed()
+                self.end_game()
+                break
+            elif msg.content.lower() == self.char["name"].lower() or msg.content.lower() == self.jp_char_name.lower():
                 self.points = math.floor(max(1, 10 - (end - start))) * 2 + (self.attempts - 1) * 3
                 self.end_game()
                 self.winners.append(msg.author)
                 await self.send_correct_guess_embed(msg)
 
                 #add score to database
+                scoreboard.update_attr(msg.author, "guesses", 1)
                 scoreboard.update_attr(msg.author, "score", self.points)
                 scoreboard.update_attr(msg.author, "games_won", 1)
                 scoreboard.update_character_guessed_count(msg.author,self.char["name"].lower())
                 break
-
-            # elif msg.content.lower() in self.char_name_array:
-            #     self.points = math.floor(max(1, 10 - (end - start) - 3))
-            #     self.end_game()
-            #     await self.send_correct_guess_embed(msg)
-            #     break
-
-            # self.attempts -= 1
-
-            # if self.attempts == 0:
-            #     await self.send_incorrect_guess_embed()
-            #     break
-
-            await self.send_incorrect_guess_warning_embed()
+            else:
+                scoreboard.update_attr(msg.author, "guesses", 1)
+                await self.send_incorrect_guess_warning_embed()

@@ -19,17 +19,9 @@ class Guess(commands.Cog):
         await g.challenge()
 
     @commands.command()
-    async def leaderboard(self,ctx,*args):
-        g = GuessingGame(ctx.channel, self.bot, ctx.author)
-        await g.start()
-
-    @commands.command()
     async def serverleaderboard(self,ctx,*args):
         g = GuessingGame(ctx.channel, self.bot, ctx.author)
         await g.start()
-
-
-
 
     @commands.command()
     async def help(self,ctx,*args):
