@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from app.classes.guessing_game import guessing_game_channel_lock
 
 import time
 import os
@@ -27,7 +28,15 @@ class Bot(commands.Bot):
             return
 
         try:
+            if message.channel.id in guessing_game_channel_lock:
+                if message.content.startswith("t.start"):
+                    await message.channel.send("Game already running!")
+                    return
+                guess_object = guessing_game_channel_lock[message.channel.id]
+                await guess_object.process_guess(message)
+                return
             await self.process_commands(message)
+
         except Exception:
             pass
 

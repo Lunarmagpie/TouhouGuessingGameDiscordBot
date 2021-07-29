@@ -37,7 +37,7 @@ class EndlessGuessingGame(GuessingGame):
             await self.send_game_already_running()
             return
         else:
-            guessing_game_channel_lock[self.channel.id] = True
+            guessing_game_channel_lock[self.channel.id] = self
 
         while self.continue_games == True:
             self.response_recieved_during_game = False

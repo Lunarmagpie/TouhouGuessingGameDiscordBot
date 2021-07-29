@@ -1,3 +1,4 @@
+from typing import AsyncContextManager
 from ..config import CHARACTER_DATBASE
 from app.util import scoreboard
 import random
@@ -20,6 +21,7 @@ class GuessingGame():
         self.winners = []
         self.opponent = None
         self.can_stop_game = True
+        self.game_running = False
     
     def check_guess(self,message):
         return message.channel == self.channel and not message.author.bot
@@ -61,9 +63,6 @@ class GuessingGame():
         embed.set_image(url=self.char["image"])
         await self.channel.send(embed=embed)
 
-    async def send_game_already_running(self):
-        await self.channel.send("Game already running!")
-
     def end_game(self):
         try:
             del guessing_game_channel_lock[self.channel.id]
@@ -71,18 +70,23 @@ class GuessingGame():
             pass
 
     async def timeout(self):
-        await self.send_timeout_embed()
-        self.end_game()
+        if self.game_running:
+            await self.send_timeout_embed()
+            self.end_game()
 
     async def process_guess(self,msg):
+        self.end_time = time.time()
+
         if msg.content == "t.stop" and self.can_stop_game:
             await self.send_game_ended_by_user_embed()
+            self.game_running = False
             self.end_game()
             return True
         elif msg.content.startswith("t."):
             pass
         elif msg.content.lower() == self.char["name"].lower() or msg.content.lower() == self.jp_char_name.lower():
             self.points = math.floor(max(1, 10 - (self.end_time - self.start_time))) * 2 + (self.attempts - 1) * 3
+            self.game_running = False
             self.end_game()
             self.winners.append(msg.author)
             await self.send_correct_guess_embed(msg)
@@ -102,23 +106,11 @@ class GuessingGame():
         self.randomize_character()
         self.start_time = time.time()
         await self.send_question_embed(custom_title)
-        while True:
-            try:
-                msg = await self.bot.wait_for('message', check=self.check_guess, timeout = 20 - (time.time() - self.start_time))
-            except asyncio.TimeoutError:
-                await self.timeout()
-                break
-            self.end_time = time.time()
-            if await self.process_guess(msg):
-                break
-            else:
-                continue
+        await asyncio.sleep(20)
+        await self.timeout()
 
     async def start(self, custom_title="Who's that 2hu?") -> None:
-        if self.channel.id in guessing_game_channel_lock:
-            await self.send_game_already_running()
-            return
-        else:
-            guessing_game_channel_lock[self.channel.id] = True
+        self.game_running = True
+        guessing_game_channel_lock[self.channel.id] = self
 
         await self.game_loop(custom_title)
