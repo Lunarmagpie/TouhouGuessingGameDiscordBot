@@ -40,7 +40,7 @@ def center(img, name):
 
 def main():
     for i,char in enumerate(CHARACTER_DATBASE):
-        center(char['image'], char['name'])
+        create_silhouette(char['image'], char['name'])
         print(f"{i} - {char}")
 
 if __name__ == "__main__":
