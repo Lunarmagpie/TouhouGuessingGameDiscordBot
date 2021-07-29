@@ -16,11 +16,10 @@ class Challenge(GuessingGame):
         self.check_is_opponent = lambda message: message.channel == self.channel and message.author.id == self.opponent.id
 
     async def start_full_game(self, title):
-        await self.start(opponent=self.opponent.id, custom_title=title)
-        self.character_index = random.choice(range(len(CHARACTER_DATBASE)))
-        self.char = CHARACTER_DATBASE[self.character_index]
+        await super().start(opponent=self.opponent.id, custom_title=title)
+        self.randomize_character()
 
-    async def challenge(self):
+    async def start(self):
         if self.opponent == None:
             await self.channel.send("You must mention a player to challenge!")
             return
