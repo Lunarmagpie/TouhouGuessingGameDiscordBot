@@ -33,14 +33,13 @@ class GuessingGame():
         self.check_guess = lambda message: message.channel == self.channel and not message.author.bot
 
     def check_guess_oppponent(self, message):
-        if self.opponent != None:
-            return self.check_guess and (message.author.id == self.opponent or message.author == self.author)
+        if self.opponent.id != None:
+            return self.check_guess and (message.author.id == self.opponent.id or message.author == self.author)
         return self.check_guess
 
     async def send_question_embed(self, title):
         embed = discord.Embed(title=title, color = 0x3B88C3, description="Guess by typing the character's name in chat.")
         embed.set_image(url=self.char["silhouette"])
-        print(self.char["silhouette"])
         await self.channel.send(embed=embed)
 
     async def send_correct_guess_embed(self, msg):
@@ -65,7 +64,6 @@ class GuessingGame():
         del guessing_game_channel_lock[self.channel.id]
 
     async def start(self, opponent=None, custom_title="Who's that 2hu?") -> None:
-        self.opponent = opponent
         if self.channel.id in guessing_game_channel_lock:
             await self.send_game_already_running()
             return

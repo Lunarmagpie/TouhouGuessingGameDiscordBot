@@ -35,7 +35,7 @@ class Challenge(GuessingGame):
             await self.channel.send("Challenge declined.")
             return
 
-        for i in range(1):
+        for i in range(5):
             await self.start_full_game(f"{self.author.name} vs {self.opponent.name}: Round {i + 1} of 5")
 
         winner_list = Counter(self.winners).most_common(2)
