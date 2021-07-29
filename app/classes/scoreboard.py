@@ -1,5 +1,16 @@
 from .database import Database
 import discord
+import copy
+
+base_player = {
+    "player_id" : 0, #must be set before use
+    "score" : 0,
+    "games_won" : 0,
+    "guesses" : 0,
+    "challenge_mode_games_played" : 0,
+    "challange_mode_games_won" : 0,
+    "guessed_characters" : {}
+}
 
 class UserNotFoundError(Exception):
     pass
@@ -8,45 +19,48 @@ class Scoreboard(Database):
     def __init__(self) -> None:
         super().__init__("score", "score")
     
-    def add_to_player_score(self,user: discord.User,score: int) -> None:
+    def get_base_player(self,player_id):
+        tmp = copy.deepcopy(base_player)
+        tmp["player_id"] = player_id
+        return tmp
+
+
+    def get_player(self,player_id):
+        res = self.table.find({"player_id":player_id})
+        if res.count() >= 1:
+            return res[0]
+        else:
+            base_player = self.get_base_player(player_id)
+            self.table.insert_one(base_player)
+            return base_player
+
+    def update_attr(self,user: discord.User,attr: str, increment: int) -> None:
         """
         Adds to a user scores and increments games won by one
         """
-        player_id = int(user.id)
-
-        res = self.table.find({"player_id":player_id})
-
-        if res.count() >= 1:
-            player = res[0]
-            print(player)
-            self.update_player_score(player_id,score+player["score"],player["games_won"]+1)
-        else:
-            self.create_new_player_with_score(player_id,score)
-
-    def create_new_player_with_score(self,player_id,score):
-        self.table.insert_one({
-            "player_id" : player_id,
-            "score" : score,
-            "games_won" : 1,
-        })
-    
-    def update_player_score(self,player_id,score,games_won):
+        player_id = user.id
+        player = self.get_player(player_id)
         self.table.update_one(
         {"player_id":player_id},
         {
-            "$set":{
-                "player_id" : player_id,
-                "score" : score,
-                "games_won" : games_won,
+            "$inc":{
+                attr : increment,
             }
         })
 
-    def get_player_information(self, user: discord.User):
-        player_info = self.table.find_one({
-            "player_id": user.id
+    def update_character_guessed_count(self,user: discord.User,character_name: str):
+        player_id = user.id
+        player = self.get_player(player_id)
+        self.table.update_one(
+        {"player_id":player_id},
+        {
+            "$inc":{
+                f"guessed_characters.{character_name}" : 1,
+            }
         })
+            
 
-        if player_info is None:
-            raise UserNotFoundError
+    def get_player_information(self, user: discord.User) -> dict:
+        player_info = self.get_player(user.id)
 
         return player_info

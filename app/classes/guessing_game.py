@@ -29,11 +29,12 @@ class GuessingGame():
         self.points = 0
         self.attempts = 3
         self.winners = []
+        self.opponent = None
 
         self.check_guess = lambda message: message.channel == self.channel and not message.author.bot
 
     def check_guess_oppponent(self, message):
-        if self.opponent.id != None:
+        if self.opponent != None:
             return self.check_guess and (message.author.id == self.opponent.id or message.author == self.author)
         return self.check_guess
 
@@ -91,7 +92,8 @@ class GuessingGame():
                 await self.send_correct_guess_embed(msg)
 
                 #add score to database
-                scoreboard.add_to_player_score(msg.author, self.points)
+                scoreboard.update_attr(msg.author, "score", self.points)
+                scoreboard.update_character_guessed_count(msg.author,self.char["name"].lower())
                 break
 
             # elif msg.content.lower() in self.char_name_array:

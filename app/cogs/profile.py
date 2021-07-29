@@ -24,7 +24,5 @@ class Profile(commands.Cog):
         embed.set_author(name=f"{ctx.author.name}'s Statistics", icon_url=ctx.author.avatar_url)
         await ctx.channel.send(embed=embed)
 
-
-
 def setup(bot: "Bot"):
     bot.add_cog(Profile(bot))
