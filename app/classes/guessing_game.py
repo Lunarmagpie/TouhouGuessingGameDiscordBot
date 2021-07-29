@@ -50,8 +50,8 @@ class GuessingGame():
         await self.channel.send(embed=embed)
 
     async def send_incorrect_guess_warning_embed(self):
-        #embed = discord.Embed(title=f"🛑 Incorrect! {self.attempts} Attempt{'s' if self.attempts != 1 else ''} remaining.", color = 0xDD2E44)
-        embed = discord.Embed(title=f"🛑 Incorrect!", color = 0xDD2E44)
+        #embed = discord.Embed(title=f" Incorrect! {self.attempts} Attempt{'s' if self.attempts != 1 else ''} remaining.", color = 0xDD2E44)
+        embed = discord.Embed(title=f"Incorrect!", color = 0xDD2E44)
         await self.channel.send(embed=embed)
 
     async def send_timeout_embed(self):

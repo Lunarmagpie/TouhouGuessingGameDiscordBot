@@ -36,7 +36,7 @@ class Challenge(GuessingGame):
             await self.channel.send("Challenge declined.")
             return
 
-        for i in range(5):
+        for i in range(1):
             await self.start_full_game(f"{self.author.name} vs {self.opponent.name}: Round {i + 1} of 5")
 
         winner_list = Counter(self.winners).most_common(2)
@@ -46,12 +46,25 @@ class Challenge(GuessingGame):
         if len(winner_list) == 1:
             winner = winner_list[0][0]
         else:
-            while winner_list[0][1] == winner_list[1][1]:
-                await self.channel.send(f"{self.author.name} vs {self.opponent.name}: Extra round (Tiebreaker)")
-                await self.start_full_game()
+            while True:
+                if len(winner_list) = 0 or winner_list[0][1] == winner_list[1][1]:
+                    await self.start_full_game(f"{self.author.name} vs {self.opponent.name}: Extra round (Tiebreaker)")
+                else:
+                    break
                 winner_list = Counter(self.winners).most_common(2)
 
         winner = Counter(self.winners).most_common(1)[0][0]
 
-        await self.channel.send(f'The winner is {winner.mention}\n{winner.mention} has gained 50 points.')
+        points = Counter(self.winners).most_common(1)[0][1] * 5 + 40
+
+        embed = discord.Embed(
+            title = f':crown: The winner is {winner.name}! :crown:',
+            color = 0xfcba03,
+            description=f'{winner.mention} has gained {points} points.'
+        )
+        embed.set_image(url='https://media1.tenor.com/images/bb15b01585e46acca0bb8da48a9e915e/tenor.gif?itemid=21439783')
+        await self.channel.send(embed=embed)
+
+
+        scoreboard.update_attr(msg.author, "score", self.points)
         scoreboard.update_attr(winner,"challange_mode_games_won",1)
