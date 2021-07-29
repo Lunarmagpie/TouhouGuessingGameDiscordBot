@@ -6,7 +6,7 @@ import random
 import discord
 import time
 import math
-import asyncio
+from asyncio.exceptions import TimeoutError
 
 DANCE_GIFS = [
     "https://media1.tenor.com/images/bb15b01585e46acca0bb8da48a9e915e/tenor.gif?itemid=21439783",
@@ -42,6 +42,9 @@ class Challenge(GuessingGame):
             return super().check_guess(message) and (message.author.id == self.opponent.id or message.author == self.author)
         return super().check_guess(message)
 
+    def end_game(self):
+        pass
+
     async def start(self):
         if self.channel.id in guessing_game_channel_lock:
             await self.send_game_already_running()
@@ -59,6 +62,7 @@ class Challenge(GuessingGame):
             msg = await self.bot.wait_for('message', check=self.check_is_opponent, timeout = 20)
         except TimeoutError:
             await self.channel.send("Request timed out.")
+            super().end_game()
             return
 
         if msg.content == "y" or msg.content == "yes":
@@ -66,6 +70,7 @@ class Challenge(GuessingGame):
             scoreboard.update_attr(self.opponent,"challenge_mode_games_played",1)
         else:
             await self.channel.send("Challenge declined.")
+            super().end_game()
             return
 
         for i in range(5):
@@ -106,3 +111,4 @@ class Challenge(GuessingGame):
 
         scoreboard.update_attr(msg.author, "score", self.points)
         scoreboard.update_attr(winner,"challange_mode_games_won",1)
+        super().end_game()
