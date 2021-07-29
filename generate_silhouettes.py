@@ -8,7 +8,7 @@ import math
 
 
 def create_silhouette(img, name):
-    image = Image.open(requests.get(img, stream=True).raw)
+    image = Image.open(f"data/images/{name}.png")
 
     x = np.array(image)
     r, g, b, a = np.rollaxis(x, axis=-1)
@@ -22,7 +22,7 @@ def create_silhouette(img, name):
     image.save(f"data/silhouettes/{name}.png", 'PNG')
 
 def center(img, name):
-    image = Image.open(requests.get(img, stream=True).raw)
+    image = Image.open(f"data/images/{name}.png")
 
     color = (0, 0, 0, 0)
     width, height = image.size
