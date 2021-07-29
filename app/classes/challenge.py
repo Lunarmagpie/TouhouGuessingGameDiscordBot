@@ -31,6 +31,11 @@ class Challenge(GuessingGame):
         await super().start(opponent=self.opponent.id, custom_title=title)
         self.randomize_character()
 
+    async def send_question_embed(self, title):
+        embed = discord.Embed(title=title, color = 0x3B88C3, description="Guess by typing the character's name in chat.")
+        embed.set_image(url=self.char["silhouette"])
+        await self.channel.send(embed=embed)
+
     async def start(self):
         if self.opponent == None:
             await self.channel.send("You must mention a player to challenge!")
@@ -48,7 +53,7 @@ class Challenge(GuessingGame):
             await self.channel.send("Challenge declined.")
             return
 
-        for i in range(1):
+        for i in range(5):
             await self.start_full_game(f"{self.author.name} vs {self.opponent.name}: Round {i + 1} of 5")
 
         winner_list = Counter(self.winners).most_common(2)
@@ -59,11 +64,13 @@ class Challenge(GuessingGame):
             winner = winner_list[0][0]
         else:
             while True:
-                if len(winner_list) == 0 or winner_list[0][1] == winner_list[1][1]:
+                if len(winner_list) <= 1 or winner_list[0][1] == winner_list[1][1]:
                     await self.start_full_game(f"{self.author.name} vs {self.opponent.name}: Extra round (Tiebreaker)")
                 else:
                     break
                 winner_list = Counter(self.winners).most_common(2)
+                if len(winner_list) == 1:
+                    break
 
         winner = Counter(self.winners).most_common(1)[0][0]
 

@@ -42,6 +42,7 @@ class GuessingGame():
     async def send_question_embed(self, title):
         embed = discord.Embed(title=title, color = 0x3B88C3, description="Guess by typing the character's name in chat.")
         embed.set_image(url=self.char["silhouette"])
+        embed.set_footer(text="Type `t.stop` to stop the game!")
         await self.channel.send(embed=embed)
 
     async def send_correct_guess_embed(self, msg):
@@ -51,8 +52,7 @@ class GuessingGame():
 
     async def send_incorrect_guess_warning_embed(self):
         #embed = discord.Embed(title=f" Incorrect! {self.attempts} Attempt{'s' if self.attempts != 1 else ''} remaining.", color = 0xDD2E44)
-        embed = discord.Embed(title=f"Incorrect!", color = 0xDD2E44)
-        await self.channel.send(embed=embed)
+        await self.channel.send("**Incorrect!**")
 
     async def send_timeout_embed(self):
         embed = discord.Embed(title=f"Time's up!", color = 0xDD2E44, description=f"The character is **{self.char['name']}**.")
