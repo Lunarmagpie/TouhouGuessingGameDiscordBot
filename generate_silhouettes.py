@@ -16,7 +16,7 @@ def create_silhouette(img, name):
     g.fill(0)
     b.fill(0)
     x = np.dstack([r, g, b, a])
-    
+
     image = Image.fromarray(x, 'RGBA')
     name = hash_character_name(name)
     image.save(f"data/silhouettes/{name}.png", 'PNG')
@@ -39,8 +39,9 @@ def center(img, name):
     return result
 
 def main():
-    for char in CHARACTER_DATBASE:
-        create_silhouette(char['image'], char['name'])
+    for i,char in enumerate(CHARACTER_DATBASE):
+        center(char['image'], char['name'])
+        print(f"{i} - {char}")
 
 if __name__ == "__main__":
     main()
