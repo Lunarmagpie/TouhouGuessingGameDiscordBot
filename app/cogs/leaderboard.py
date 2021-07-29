@@ -13,17 +13,20 @@ class Leaderboard(commands.Cog):
 
         res = scoreboard.table.find().sort("score",-1).limit(25)
 
-        out = ""
+        out_name = ""
+        out_score = ""
         for player in res:
             user = await self.bot.fetch_user(player["player_id"])
 
-            out += (f"{user.name}: {player['score']}\n")
-        
+            out_name += (f"**{user.name}**\t\n")
+            out_score += (f"{player['score']} points\n")
+
         embed = discord.Embed(
-            color = 0xfcba03,
-            description=out
+            title = "Top 25 Players",
+            color = 0xfcba03
         )
-        embed.set_author(name=f"Top 25 Players")
+        embed.add_field(name='​', value=out_name, inline=True)
+        embed.add_field(name='​', value=out_score, inline=True)
         await ctx.channel.send(embed=embed)
 
 def setup(bot: "Bot"):
