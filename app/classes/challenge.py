@@ -1,6 +1,7 @@
 from ..config import CHARACTER_DATBASE
 from .guessing_game import GuessingGame
 from collections import Counter
+from app.util import scoreboard
 import random
 import discord
 import time
@@ -24,13 +25,14 @@ class Challenge(GuessingGame):
             await self.channel.send("You must mention a player to challenge!")
             return
 
-        #self.opponent = int(self.user[3:-1])
         await self.channel.send(f'{self.opponent.mention}: Do you accept the challenge? Type "y" or "yes" to accept or anything else to decline.')
 
         msg = await self.bot.wait_for('message', check=self.check_is_opponent, timeout = 20)
 
         if msg.content == "y" or msg.content == "yes":
-            print("true")
+            scoreboard.update_attr(self.author,"challenge_mode_games_played",1)
+            scoreboard.update_attr(self.opponent,"challenge_mode_games_played",1)
+
         else:
             await self.channel.send("Challenge declined.")
             return
@@ -53,3 +55,4 @@ class Challenge(GuessingGame):
         winner = Counter(self.winners).most_common(1)[0][0]
 
         await self.channel.send(f'The winner is {winner.mention}\n{winner.mention} has gained 50 points.')
+        scoreboard.update_attr(winner,"challange_mode_games_won",1)

@@ -85,6 +85,8 @@ class GuessingGame():
 
             end = time.time()
 
+            scoreboard.update_attr(msg.author, "guesses", 1)
+
             if msg.content.lower() == self.char["name"].lower() or msg.content.lower() == self.jp_char_name.lower():
                 self.points = math.floor(max(1, 10 - (end - start))) * 2 + (self.attempts - 1) * 3
                 self.end_game()
@@ -93,6 +95,7 @@ class GuessingGame():
 
                 #add score to database
                 scoreboard.update_attr(msg.author, "score", self.points)
+                scoreboard.update_attr(msg.author, "games_won", 1)
                 scoreboard.update_character_guessed_count(msg.author,self.char["name"].lower())
                 break
 
