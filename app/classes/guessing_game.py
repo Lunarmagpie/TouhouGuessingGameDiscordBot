@@ -26,7 +26,7 @@ class GuessingGame():
         self.character_index = random.choice(range(len(CHARACTER_DATBASE)))
         self.char = CHARACTER_DATBASE[self.character_index]
         self.char_name = self.char["name"]
-        
+
         if len(self.char_name.split(" ")) == 2:
             self.jp_char_name = self.char_name.split(" ")
             self.jp_char_name.reverse()
