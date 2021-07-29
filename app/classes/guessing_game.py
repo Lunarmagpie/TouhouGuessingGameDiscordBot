@@ -22,8 +22,7 @@ class GuessingGame():
         self.can_stop_game = True
     
     def check_guess(self,message):
-        #Ignore bot commands to make it look better
-        return message.channel == self.channel and not message.author.bot and not message.content.startswith("t.")
+        return message.channel == self.channel and not message.author.bot
 
     def randomize_character(self):
         self.character_index = random.choice(range(len(CHARACTER_DATBASE)))
@@ -80,6 +79,8 @@ class GuessingGame():
             await self.send_game_ended_by_user_embed()
             self.end_game()
             return True
+        elif msg.content.startswith("t."):
+            pass
         elif msg.content.lower() == self.char["name"].lower() or msg.content.lower() == self.jp_char_name.lower():
             self.points = math.floor(max(1, 10 - (self.end_time - self.start_time))) * 2 + (self.attempts - 1) * 3
             self.end_game()
