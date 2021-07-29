@@ -22,7 +22,7 @@ class GuessingGame():
         self.opponent = None
         self.can_stop_game = True
         self.game_running = False
-    
+
     def check_guess(self,message):
         return message.channel == self.channel and not message.author.bot
 
@@ -70,9 +70,18 @@ class GuessingGame():
             pass
 
     async def timeout(self):
+        await self.send_timeout_embed()
+        self.end_game()
+
+    async def hint(self):
         if self.game_running:
-            await self.send_timeout_embed()
-            self.end_game()
+            description = ""
+            name_split = self.char_name.split(" ")
+            for word in name_split:
+                description += (word[0] + " " + ("\_ " * (len(word) - 1)) + "\t")
+
+            embed = discord.Embed(title=f"Hint", color = 0x78B159, description=description)
+            await self.channel.send(embed=embed)
 
     async def process_guess(self,msg):
         self.end_time = time.time()
@@ -102,12 +111,21 @@ class GuessingGame():
             await self.send_incorrect_guess_warning_embed()
             return False
 
+    def game_over_check(self, message):
+            return not self.game_running
+
     async def game_loop(self,custom_title):
         self.randomize_character()
         self.start_time = time.time()
         await self.send_question_embed(custom_title)
-        await asyncio.sleep(20)
-        await self.timeout()
+        try:
+            await self.bot.wait_for('message', check=self.game_over_check, timeout=10)
+        except asyncio.TimeoutError:
+            await self.timeout()
+        self.game_running = False
+        # await asyncio.sleep(5)
+        # await self.hint()
+        # await asyncio.sleep(10)
 
     async def start(self, custom_title="Who's that 2hu?") -> None:
         self.game_running = True
