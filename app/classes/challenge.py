@@ -1,5 +1,5 @@
 from ..config import CHARACTER_DATBASE
-from .guessing_game import GuessingGame
+from .guessing_game import GuessingGame, guessing_game_channel_lock
 from collections import Counter
 from app.util import scoreboard
 import random
@@ -25,35 +25,51 @@ class Challenge(GuessingGame):
         self.opponent = user
         self.can_stop_game = False
         self.check_is_opponent = lambda message: message.channel == self.channel and message.author.id == self.opponent.id
-
-    async def start_full_game(self, title):
-        await super().start(opponent=self.opponent.id, custom_title=title)
-        self.randomize_character()
+        self.tiebreaker_count = 0
 
     async def send_question_embed(self, title):
         embed = discord.Embed(title=title, color = 0x3B88C3, description="Guess by typing the character's name in chat.")
         embed.set_image(url=self.char["silhouette"])
         await self.channel.send(embed=embed)
 
+    async def send_tie_embed(self):
+        embed = discord.Embed(title="The game tied", color = 0x3B88C3, description="Too many rounds have passed...")
+        embed.set_image(url="https://i.kym-cdn.com/photos/images/original/002/045/430/d4f.png")
+        await self.channel.send(embed=embed)
+
+    def check_guess(self, message):
+        if self.opponent != None:
+            return super().check_guess(message) and (message.author.id == self.opponent.id or message.author == self.author)
+        return super().check_guess(message)
+
     async def start(self):
+        if self.channel.id in guessing_game_channel_lock:
+            await self.send_game_already_running()
+            return
+        else:
+            guessing_game_channel_lock[self.channel.id] = True
+
         if self.opponent == None:
             await self.channel.send("You must mention a player to challenge!")
             return
 
         await self.channel.send(f'{self.opponent.mention}: Do you accept the challenge? Type "y" or "yes" to accept or anything else to decline.')
 
-        msg = await self.bot.wait_for('message', check=self.check_is_opponent, timeout = 20)
+        try:
+            msg = await self.bot.wait_for('message', check=self.check_is_opponent, timeout = 20)
+        except TimeoutError:
+            await self.channel.send("Request timed out.")
+            return
 
         if msg.content == "y" or msg.content == "yes":
             scoreboard.update_attr(self.author,"challenge_mode_games_played",1)
             scoreboard.update_attr(self.opponent,"challenge_mode_games_played",1)
-
         else:
             await self.channel.send("Challenge declined.")
             return
 
         for i in range(5):
-            await self.start_full_game(f"{self.author.name} vs {self.opponent.name}: Round {i + 1} of 5")
+            await self.game_loop(f"{self.author.name} vs {self.opponent.name}: Round {i + 1} of 5")
 
         winner_list = Counter(self.winners).most_common(2)
         if len(winner_list) > 1:
@@ -64,7 +80,12 @@ class Challenge(GuessingGame):
         else:
             while True:
                 if len(winner_list) <= 1 or winner_list[0][1] == winner_list[1][1]:
-                    await self.start_full_game(f"{self.author.name} vs {self.opponent.name}: Extra round (Tiebreaker)")
+                    if (self.tiebreaker_count < 5):
+                        await self.game_loop(f"{self.author.name} vs {self.opponent.name}: Extra round (Tiebreaker)")
+                        self.tiebreaker_count+=1
+                    else:
+                        await self.send_tie_embed()
+                        return
                 else:
                     break
                 winner_list = Counter(self.winners).most_common(2)
@@ -82,7 +103,6 @@ class Challenge(GuessingGame):
         )
         embed.set_image(url=random.choice(DANCE_GIFS))
         await self.channel.send(embed=embed)
-
 
         scoreboard.update_attr(msg.author, "score", self.points)
         scoreboard.update_attr(winner,"challange_mode_games_won",1)

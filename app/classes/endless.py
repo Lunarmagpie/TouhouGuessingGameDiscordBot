@@ -1,5 +1,6 @@
-from .guessing_game import GuessingGame
+from .guessing_game import GuessingGame, guessing_game_channel_lock
 import discord
+import time
 
 class EndlessGuessingGame(GuessingGame):
     def __init__(self, channel, bot, author):
@@ -31,7 +32,13 @@ class EndlessGuessingGame(GuessingGame):
             embed.set_footer(text="Endless mode has ended!")
         await self.channel.send(embed=embed)
 
-    async def start(self):
+    async def start(self, opponent=None, custom_title="Who's that 2hu?") -> None:
+        if self.channel.id in guessing_game_channel_lock:
+            await self.send_game_already_running()
+            return
+        else:
+            guessing_game_channel_lock[self.channel.id] = True
+
         while self.continue_games == True:
             self.response_recieved_during_game = False
-            await super().start()
+            await self.game_loop(custom_title)

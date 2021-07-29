@@ -20,7 +20,10 @@ class GuessingGame():
         self.winners = []
         self.opponent = None
         self.can_stop_game = True
-        self.check_guess = lambda message: message.channel == self.channel and not message.author.bot
+    
+    def check_guess(self,message):
+        #Ignore bot commands to make it look better
+        return message.channel == self.channel and not message.author.bot and not message.content.startswith("t.")
 
     def randomize_character(self):
         self.character_index = random.choice(range(len(CHARACTER_DATBASE)))
@@ -33,11 +36,6 @@ class GuessingGame():
             self.jp_char_name = " ".join(self.jp_char_name)
         else:
             self.jp_char_name = self.char_name
-
-    def check_guess_oppponent(self, message):
-        if self.opponent != None:
-            return self.check_guess(message) and (message.author.id == self.opponent.id or message.author == self.author)
-        return self.check_guess(message)
 
     async def send_question_embed(self, title):
         embed = discord.Embed(title=title, color = 0x3B88C3, description="Guess by typing the character's name in chat.")
@@ -68,7 +66,10 @@ class GuessingGame():
         await self.channel.send("Game already running!")
 
     def end_game(self):
-        del guessing_game_channel_lock[self.channel.id]
+        try:
+            del guessing_game_channel_lock[self.channel.id]
+        except KeyError:
+            pass
 
     async def timeout(self):
         await self.send_timeout_embed()
@@ -96,22 +97,13 @@ class GuessingGame():
             await self.send_incorrect_guess_warning_embed()
             return False
 
-
-    async def start(self, opponent=None, custom_title="Who's that 2hu?") -> None:
+    async def game_loop(self,custom_title):
         self.randomize_character()
-
-        if self.channel.id in guessing_game_channel_lock:
-            await self.send_game_already_running()
-            return
-        else:
-            guessing_game_channel_lock[self.channel.id] = True
-
         self.start_time = time.time()
         await self.send_question_embed(custom_title)
-
         while True:
             try:
-                msg = await self.bot.wait_for('message', check=self.check_guess_oppponent, timeout = 20 - (time.time() - self.start_time))
+                msg = await self.bot.wait_for('message', check=self.check_guess, timeout = 20 - (time.time() - self.start_time))
             except asyncio.TimeoutError:
                 await self.timeout()
                 break
@@ -120,3 +112,12 @@ class GuessingGame():
                 break
             else:
                 continue
+
+    async def start(self, custom_title="Who's that 2hu?") -> None:
+        if self.channel.id in guessing_game_channel_lock:
+            await self.send_game_already_running()
+            return
+        else:
+            guessing_game_channel_lock[self.channel.id] = True
+
+        await self.game_loop(custom_title)
