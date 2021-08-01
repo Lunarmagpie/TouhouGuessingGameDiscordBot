@@ -9,15 +9,14 @@ from . import config
 class Bot(commands.Bot):
     def __init__(self) -> None:
         super().__init__(
-            command_prefix=commands.when_mentioned_or("t.", ),help_command=None
+            command_prefix="t.",help_command=None
         )
 
         for filename in os.listdir(os.path.join("app", "cogs")):
             if filename.endswith("py"):
                 self.load_extension(f"app.cogs.{filename[:-3]}")
 
-        dbl_token = os.environ["thdbltoken"]
-        self.topggpy = topgg.DBLClient(self, dbl_token)
+        self.topggpy = topgg.DBLClient(self, os.environ["thdbltoken"], autopost=True, post_shard_count=True)
 
     def run(self):
         print("Touhou Bot!")
