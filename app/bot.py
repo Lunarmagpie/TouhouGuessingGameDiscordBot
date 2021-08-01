@@ -21,7 +21,7 @@ class Bot(commands.Bot):
 
     def run(self):
         print("Touhou Bot!")
-        return super().run(os.environ["token"])
+        return super().run(os.environ["thtoken"])
 
 
     async def on_message(self, message: discord.Message):
