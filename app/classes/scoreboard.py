@@ -9,6 +9,7 @@ base_player = {
     "guesses" : 0,
     "challenge_mode_games_played" : 0,
     "challange_mode_games_won" : 0,
+    "username" : "",
     "guessed_characters" : {}
 }
 
@@ -52,6 +53,17 @@ class Scoreboard(Database):
         {
             "$inc":{
                 f"guessed_characters.{character_name}" : 1,
+            }
+        })
+
+    def update_username(self,user: discord.User):
+        player_id = user.id
+        player = self.get_player(player_id)
+        self.table.update_one(
+        {"player_id":player_id},
+        {
+            "$set":{
+                f"username" : user.name,
             }
         })
             

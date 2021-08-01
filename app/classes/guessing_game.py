@@ -65,6 +65,7 @@ class GuessingGame():
         scoreboard.update_attr(author, "guesses", 1)
         scoreboard.update_attr(author, "score", points)
         scoreboard.update_attr(author, "games_won", 1)
+        scoreboard.update_username(author)
         scoreboard.update_character_guessed_count(author,char_name)
 
     def end_game(self):
