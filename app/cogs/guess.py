@@ -1,4 +1,5 @@
 import discord
+import topgg
 from discord.ext import commands
 from app.bot import Bot
 from app.classes.guessing_game import GuessingGame
@@ -24,10 +25,15 @@ class Guess(commands.Cog):
         g = Challenge(ctx.channel, self.bot, ctx.author, user)
         await g.start()
 
+    # @commands.command()
+    # async def serverleaderboard(self,ctx,*args):
+    #     g = GuessingGame(ctx.channel, self.bot, ctx.author)
+    #     await g.start()
+
     @commands.command()
-    async def serverleaderboard(self,ctx,*args):
-        g = GuessingGame(ctx.channel, self.bot, ctx.author)
-        await g.start()
+    async def vote(self,ctx,*args):
+        has_voted = await self.bot.topggpy.get_user_vote(ctx.author.id)
+        await ctx.channel.send(f"{has_voted}Please vote for Touhou Character Guesser! Voting helps Touhou Character Guesser have more visibility.\nhttps://top.gg/bot/869410048743473182/vote")
 
     @commands.command()
     async def help(self,ctx,*args):
@@ -43,6 +49,7 @@ class Guess(commands.Cog):
         embed.add_field(name="t.profile (@user)", value="Show a player's stats, or yours if not specified.", inline="True")
         embed.add_field(name="t.leaderboard", value="Show the global point leaderboard.", inline="True")
         embed.add_field(name="t.credits", value="Show the credits menu.", inline="True")
+        embed.add_field(name="t.vote", value="Vote for this bot. No rewards are offered currently.", inline="True")
         # embed.add_field(name="t.serverleaderboard", value="Show the server point leaderboard.", inline="True")
         embed.add_field(name="t.help", value="Show this menu.", inline="True")
         await ctx.channel.send(embed=embed)

@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+import topgg
 
 import time
 import os
@@ -14,6 +15,9 @@ class Bot(commands.Bot):
         for filename in os.listdir(os.path.join("app", "cogs")):
             if filename.endswith("py"):
                 self.load_extension(f"app.cogs.{filename[:-3]}")
+
+        dbl_token = os.environ["thdbltoken"]
+        self.topggpy = topgg.DBLClient(self, dbl_token)
 
     def run(self):
         print("Touhou Bot!")
