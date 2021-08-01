@@ -33,7 +33,7 @@ class Guess(commands.Cog):
 
     @commands.command()
     async def vote(self,ctx,*args):
-        header = {"Authorization" : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijg2OTQxMDA0ODc0MzQ3MzE4MiIsImJvdCI6dHJ1ZSwiaWF0IjoxNjI3ODQ4NjA5fQ.d8m28fK6NOo1dXbm4nrCLtgWcAmZKhgZOIdZv0H3yaQ"}
+        header = {"Authorization" : self.bot.dbl_token}
         res = requests.get(f"https://top.gg/api/bots/869410048743473182/check?userId={ctx.author.id}",headers=header).json()
         has_voted = True if res["voted"] >= 1 else False
 

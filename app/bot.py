@@ -16,7 +16,8 @@ class Bot(commands.Bot):
             if filename.endswith("py"):
                 self.load_extension(f"app.cogs.{filename[:-3]}")
 
-        self.topggpy = topgg.DBLClient(self, os.environ["thdbltoken"], autopost=True, post_shard_count=True)
+        self.dbl_token = os.environ["thdbltoken"]
+        self.topggpy = topgg.DBLClient(self, self.dbl_token,autopost=True, post_shard_count=True)
 
     def run(self):
         print("Touhou Bot!")
