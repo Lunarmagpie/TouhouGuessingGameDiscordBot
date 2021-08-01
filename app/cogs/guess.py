@@ -33,6 +33,7 @@ class Guess(commands.Cog):
     @commands.command()
     async def vote(self,ctx,*args):
         has_voted = await self.bot.topggpy.get_user_vote(ctx.author.id)
+        print(has_voted)
         await ctx.channel.send(f"{has_voted}Please vote for Touhou Character Guesser! Voting helps Touhou Character Guesser have more visibility.\nhttps://top.gg/bot/869410048743473182/vote")
 
     @commands.command()
