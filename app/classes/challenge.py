@@ -19,7 +19,7 @@ DANCE_GIFS = [
     "https://moriyashrine.org/uploads/monthly_2018_09/2hu.gif.66e48f662f142d94cc6b03efee49bb14.gif",
 ]
 
-class ChallengeGuessingGame(GuessingGame):
+class Challenge(GuessingGame):
     def __init__(self, channel, bot, author, user):
         super().__init__(channel, bot, author)
         self.opponent = user
@@ -33,7 +33,7 @@ class ChallengeGuessingGame(GuessingGame):
         await self.channel.send(embed=embed)
 
     async def send_tie_embed(self):
-        embed = discord.Embed(title="Its a tie", color = 0x3B88C3, description="Too many rounds have passed...")
+        embed = discord.Embed(title="The game tied", color = 0x3B88C3, description="Too many rounds have passed...")
         embed.set_image(url="https://i.kym-cdn.com/photos/images/original/002/045/430/d4f.png")
         await self.channel.send(embed=embed)
 
@@ -45,14 +45,13 @@ class ChallengeGuessingGame(GuessingGame):
     def end_game(self):
         pass
 
-class Challenge():
-    def __init__(self) -> None:
-        self.opponent = user
-        self.can_stop_game = False
-        self.check_is_opponent = lambda message: message.channel == self.channel and message.author.id == self.opponent.id
-        self.tiebreaker_count = 0
-
     async def start(self):
+        if self.channel.id in guessing_game_channel_lock:
+            await self.send_game_already_running()
+            return
+        else:
+            guessing_game_channel_lock[self.channel.id] = True
+
         if self.opponent == None:
             await self.channel.send("You must mention a player to challenge!")
             return
@@ -75,7 +74,6 @@ class Challenge():
             return
 
         for i in range(5):
-            self.game_running = True
             await self.game_loop(f"{self.author.name} vs {self.opponent.name}: Round {i + 1} of 5")
 
         winner_list = Counter(self.winners).most_common(2)
@@ -113,5 +111,4 @@ class Challenge():
 
         scoreboard.update_attr(msg.author, "score", self.points)
         scoreboard.update_attr(winner,"challange_mode_games_won",1)
-
         super().end_game()

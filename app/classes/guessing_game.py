@@ -1,4 +1,3 @@
-from typing import AsyncContextManager
 from ..config import CHARACTER_DATBASE
 from app.util import scoreboard
 import random
@@ -21,10 +20,6 @@ class GuessingGame():
         self.winners = []
         self.opponent = None
         self.can_stop_game = True
-        self.game_running = False
-
-    def check_guess(self,message):
-        return message.channel == self.channel and not message.author.bot
 
     def randomize_character(self):
         self.character_index = random.choice(range(len(CHARACTER_DATBASE)))
@@ -63,6 +58,15 @@ class GuessingGame():
         embed.set_image(url=self.char["image"])
         await self.channel.send(embed=embed)
 
+    async def send_game_already_running(self):
+        await self.channel.send("Game already running!")
+
+    def update_score(self, author, points, char_name):
+        scoreboard.update_attr(author, "guesses", 1)
+        scoreboard.update_attr(author, "score", points)
+        scoreboard.update_attr(author, "games_won", 1)
+        scoreboard.update_character_guessed_count(author,char_name)
+
     def end_game(self):
         try:
             del guessing_game_channel_lock[self.channel.id]
@@ -73,62 +77,48 @@ class GuessingGame():
         await self.send_timeout_embed()
         self.end_game()
 
-    async def hint(self):
-        if self.game_running:
-            description = ""
-            name_split = self.char_name.split(" ")
-            for word in name_split:
-                description += (word[0] + " " + ("\_ " * (len(word) - 1)) + "\t")
+    def check_guess(self, msg):
+        if msg.channel == self.channel and not msg.author.bot:
+            if msg.content == "t.stop" and self.can_stop_game:
+                asyncio.create_task(self.send_game_ended_by_user_embed())
+                self.end_game()
+                return True
+            elif msg.content.startswith("t."):
+                pass
+            elif msg.content.lower() == self.char["name"].lower() or msg.content.lower() == self.jp_char_name.lower() or msg.content.lower() == "free":
+                self.end_time = time.time()
+                self.points = math.floor(max(1, 10 - (self.end_time - self.start_time))) * 2 + (self.attempts - 1) * 3
+                self.winners.append(msg.author)
+                asyncio.create_task(self.send_correct_guess_embed(msg))
+                self.end_game()
 
-            embed = discord.Embed(title=f"Hint", color = 0x78B159, description=description)
-            await self.channel.send(embed=embed)
-
-    async def process_guess(self,msg):
-        self.end_time = time.time()
-
-        if msg.content == "t.stop" and self.can_stop_game:
-            await self.send_game_ended_by_user_embed()
-            self.game_running = False
-            self.end_game()
-            return True
-        elif msg.content.startswith("t."):
-            pass
-        elif msg.content.lower() == self.char["name"].lower() or msg.content.lower() == self.jp_char_name.lower():
-            self.points = math.floor(max(1, 10 - (self.end_time - self.start_time))) * 2 + (self.attempts - 1) * 3
-            self.game_running = False
-            self.end_game()
-            self.winners.append(msg.author)
-            await self.send_correct_guess_embed(msg)
-
-            #add score to database
-            scoreboard.update_attr(msg.author, "guesses", 1)
-            scoreboard.update_attr(msg.author, "score", self.points)
-            scoreboard.update_attr(msg.author, "games_won", 1)
-            scoreboard.update_character_guessed_count(msg.author,self.char["name"].lower())
-            return True
+                #add score to database
+                self.update_score(msg.author, self.points, self.char["name"].lower())
+                return True
+            else:
+                scoreboard.update_attr(msg.author, "guesses", 1)
+                # No warning to avoid rate limiting
+                # asyncio.create_task(self.send_incorrect_guess_warning_embed())
+                return False
         else:
-            scoreboard.update_attr(msg.author, "guesses", 1)
-            await self.send_incorrect_guess_warning_embed()
             return False
-
-    def game_over_check(self, message):
-            return not self.game_running
 
     async def game_loop(self,custom_title):
         self.randomize_character()
         self.start_time = time.time()
         await self.send_question_embed(custom_title)
+
         try:
-            await self.bot.wait_for('message', check=self.game_over_check, timeout=10)
+            message = await self.bot.wait_for('message', check=self.check_guess, timeout = 20)
         except asyncio.TimeoutError:
             await self.timeout()
-        self.game_running = False
-        # await asyncio.sleep(5)
-        # await self.hint()
-        # await asyncio.sleep(10)
+        asyncio.wait(0.3)
 
     async def start(self, custom_title="Who's that 2hu?") -> None:
-        self.game_running = True
-        guessing_game_channel_lock[self.channel.id] = self
+        if self.channel.id in guessing_game_channel_lock:
+            await self.send_game_already_running()
+            return
+        else:
+            guessing_game_channel_lock[self.channel.id] = True
 
         await self.game_loop(custom_title)

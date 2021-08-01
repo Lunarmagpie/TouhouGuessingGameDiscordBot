@@ -13,10 +13,10 @@ class EndlessGuessingGame(GuessingGame):
             self.continue_games = False
         return super().end_game()
 
-    async def process_guess(self, msg):
+    def check_guess(self, msg):
         if msg.content != "t.stop":
             self.response_recieved_during_game = True
-        return await super().process_guess(msg)
+        return super().check_guess(msg)
 
     async def send_game_ended_by_user_embed(self):
         embed = discord.Embed(title=f"The game was ended!", color = 0x3B88C3, description=f"The character is **{self.char['name']}**.")
@@ -37,8 +37,9 @@ class EndlessGuessingGame(GuessingGame):
             await self.send_game_already_running()
             return
         else:
-            guessing_game_channel_lock[self.channel.id] = self
+            guessing_game_channel_lock[self.channel.id] = True
 
         while self.continue_games == True:
+            print("running")
             self.response_recieved_during_game = False
             await self.game_loop(custom_title)
