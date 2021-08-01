@@ -7,6 +7,11 @@ from app.classes.guessing_game import GuessingGame
 from app.classes.challenge import Challenge
 from app.classes.endless import EndlessGuessingGame
 
+class TopGGApiConnectionError(Exception):
+    def __init__(self, status_code, *args: object) -> None:
+        self.status_code = status_code
+        super().__init__(*args)
+
 class Guess(commands.Cog):
     def __init__(self, bot: "Bot"):
         self.bot = bot
@@ -33,12 +38,15 @@ class Guess(commands.Cog):
 
     @commands.command()
     async def vote(self,ctx,*args):
-        header = {"Authorization" : self.bot.dbl_token}
-        res = requests.get(f"https://top.gg/api/bots/869410048743473182/check?userId={ctx.author.id}",headers=header).json()
-        has_voted = True if res["voted"] >= 1 else False
+        # header = {"Authorization" : self.bot.dbl_token}
+        # res = requests.get(f"https://top.gg/api/bots/869410048743473182/check?userId={ctx.author.id}",headers=header)
+        # if res.status_code != 200:
+        #     raise TopGGApiConnectionError("Failed to connect to API",res.status_code)
+            
+        # has_voted = True if res.json()["voted"] >= 1 else False
 
-        print(has_voted)
-        await ctx.channel.send(f"{has_voted}Please vote for Touhou Character Guesser! Voting helps Touhou Character Guesser have more visibility.\nhttps://top.gg/bot/869410048743473182/vote")
+        # print(has_voted)
+        await ctx.channel.send(f"Please vote for Touhou Character Guesser! Voting helps Touhou Character Guesser have more visibility.\nhttps://top.gg/bot/869410048743473182/vote")
 
     @commands.command()
     async def help(self,ctx,*args):

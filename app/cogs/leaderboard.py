@@ -8,11 +8,7 @@ class Leaderboard(commands.Cog):
     def __init__(self, bot: "Bot"):
         self.bot = bot
 
-    @commands.command()
-    async def leaderboard(self,ctx,*args):
-        # player_info = scoreboard.get_player_information(ctx.author)
-        res = scoreboard.table.find().sort("score",-1).limit(20)
-
+    async def send_leaderboard_embed(self,ctx,res):
         out = ""
 
         for i,user in enumerate(res):
@@ -36,6 +32,26 @@ class Leaderboard(commands.Cog):
         )
         embed.add_field(name='​', value=out, inline=True)
         await ctx.channel.send(embed=embed)
+
+    @commands.command()
+    async def leaderboard(self,ctx,*args):
+        # player_info = scoreboard.get_player_information(ctx.author)
+        res = scoreboard.table.find().sort("score",-1).limit(20)
+        await self.send_leaderboard_embed(ctx,res)
+
+    @commands.command()
+    async def serverleaderboard(self,ctx,*args):
+        # player_info = scoreboard.get_player_information(ctx.author)
+        res = scoreboard.table.find(
+        { "servers": ctx.guild.id } ).sort("score",-1).limit(20)
+
+        # for doc in res:
+        #     print(doc)
+
+        # return
+        # print(res.explain())
+
+        await self.send_leaderboard_embed(ctx,res)
 
 def setup(bot: "Bot"):
     bot.add_cog(Leaderboard(bot))
