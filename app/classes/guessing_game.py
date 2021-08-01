@@ -61,12 +61,13 @@ class GuessingGame():
     async def send_game_already_running(self):
         await self.channel.send("Game already running!")
 
-    def update_score(self, author, points, char_name):
+    def update_score(self, guild, author, points, char_name):
         scoreboard.update_attr(author, "guesses", 1)
         scoreboard.update_attr(author, "score", points)
         scoreboard.update_attr(author, "games_won", 1)
         scoreboard.update_username(author)
         scoreboard.update_character_guessed_count(author,char_name)
+        scoreboard.update_serverlist(author, guild)
 
     def end_game(self):
         try:
@@ -94,7 +95,7 @@ class GuessingGame():
                 self.end_game()
 
                 #add score to database
-                self.update_score(msg.author, self.points, self.char["name"].lower())
+                self.update_score(msg.guild.id, msg.author, self.points, self.char["name"].lower())
                 return True
             else:
                 scoreboard.update_attr(msg.author, "guesses", 1)
@@ -113,7 +114,7 @@ class GuessingGame():
             message = await self.bot.wait_for('message', check=self.check_guess, timeout = 20)
         except asyncio.TimeoutError:
             await self.timeout()
-        asyncio.wait(0.3)
+        await asyncio.sleep(0.3)
 
     async def start(self, custom_title="Who's that 2hu?") -> None:
         if self.channel.id in guessing_game_channel_lock:

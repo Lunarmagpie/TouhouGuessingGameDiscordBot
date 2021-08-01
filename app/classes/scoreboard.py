@@ -10,7 +10,8 @@ base_player = {
     "challenge_mode_games_played" : 0,
     "challange_mode_games_won" : 0,
     "username" : "",
-    "guessed_characters" : {}
+    "guessed_characters" : {},
+    "servers" : []
 }
 
 class UserNotFoundError(Exception):
@@ -19,7 +20,7 @@ class UserNotFoundError(Exception):
 class Scoreboard(Database):
     def __init__(self) -> None:
         super().__init__("score", "score")
-    
+
     def get_base_player(self,player_id):
         tmp = copy.deepcopy(base_player)
         tmp["player_id"] = player_id
@@ -33,6 +34,11 @@ class Scoreboard(Database):
             base_player = self.get_base_player(player_id)
             self.table.insert_one(base_player)
             return base_player
+
+    def is_in_database(self,player_id):
+        res = self.table.find({"player_id":player_id})
+        if res.count() >= 1:
+            return True
 
     def update_attr(self,user: discord.User,attr: str, increment: int) -> None:
         player_id = user.id
@@ -66,7 +72,17 @@ class Scoreboard(Database):
                 f"username" : user.name,
             }
         })
-            
+
+    def update_serverlist(self, user: discord.User, server_id: int):
+        player_id = user.id
+        player = self.get_player(player_id)
+        self.table.update_one(
+        {"player_id":player_id},
+        {
+            "$addToSet":{
+                f"servers" : server_id,
+            }
+        })
 
     def get_player_information(self, user: discord.User) -> dict:
         player_info = self.get_player(user.id)

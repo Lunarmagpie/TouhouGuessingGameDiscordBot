@@ -1,16 +1,11 @@
-from requests.api import head
 import discord
 import requests
+from requests.api import head
 from discord.ext import commands
 from app.bot import Bot
 from app.classes.guessing_game import GuessingGame
 from app.classes.challenge import Challenge
 from app.classes.endless import EndlessGuessingGame
-
-class TopGGApiConnectionError(Exception):
-    def __init__(self, status_code, *args: object) -> None:
-        self.status_code = status_code
-        super().__init__(*args)
 
 class Guess(commands.Cog):
     def __init__(self, bot: "Bot"):
@@ -31,22 +26,23 @@ class Guess(commands.Cog):
         g = Challenge(ctx.channel, self.bot, ctx.author, user)
         await g.start()
 
-    # @commands.command()
-    # async def serverleaderboard(self,ctx,*args):
-    #     g = GuessingGame(ctx.channel, self.bot, ctx.author)
-    #     await g.start()
-
     @commands.command()
     async def vote(self,ctx,*args):
-        # header = {"Authorization" : self.bot.dbl_token}
-        # res = requests.get(f"https://top.gg/api/bots/869410048743473182/check?userId={ctx.author.id}",headers=header)
-        # if res.status_code != 200:
-        #     raise TopGGApiConnectionError("Failed to connect to API",res.status_code)
-            
-        # has_voted = True if res.json()["voted"] >= 1 else False
+        header = {"Authorization" : self.bot.dbl_token}
+        res = requests.get(f"https://top.gg/api/bots/869410048743473182/check?userId={ctx.author.id}",headers=header)
+        if res.status_code == 200:
+            pass
+        else:
+            print(res.status_code)
+            print(res.json())
+            print(self.bot.dbl_token)
+            raise Exception
+        has_voted = True if res.json()["voted"] >= 1 else False
 
-        # print(has_voted)
-        await ctx.channel.send(f"Please vote for Touhou Character Guesser! Voting helps Touhou Character Guesser have more visibility.\nhttps://top.gg/bot/869410048743473182/vote")
+        has_voted_text = ""
+        if has_voted: has_voted_text = "**You have already voted today!**"
+        else: has_voted_text = "**You can currently vote!**"
+        await ctx.channel.send(f"Please vote for Touhou Character Guesser! There are currently no rewards, but voting helps Touhou Character Guesser have more visibility and for us to pay for maintenance costs.\nhttps://top.gg/bot/869410048743473182/vote\n\n{has_voted_text}")
 
     @commands.command()
     async def help(self,ctx,*args):
@@ -62,7 +58,7 @@ class Guess(commands.Cog):
         embed.add_field(name="t.profile (@user)", value="Show a player's stats, or yours if not specified.", inline="True")
         embed.add_field(name="t.leaderboard", value="Show the global point leaderboard.", inline="True")
         embed.add_field(name="t.credits", value="Show the credits menu.", inline="True")
-        embed.add_field(name="t.vote", value="Vote for this bot. No rewards are offered currently.", inline="True")
+        embed.add_field(name="t.vote", value="Vote for this bot.", inline="True")
         # embed.add_field(name="t.serverleaderboard", value="Show the server point leaderboard.", inline="True")
         embed.add_field(name="t.help", value="Show this menu.", inline="True")
         await ctx.channel.send(embed=embed)
