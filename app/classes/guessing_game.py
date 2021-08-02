@@ -36,7 +36,7 @@ class GuessingGame():
     async def send_question_embed(self, title):
         embed = discord.Embed(title=title, color = 0x3B88C3, description="Guess by typing the character's name in chat.")
         embed.set_image(url=self.char["silhouette"])
-        embed.set_footer(text="Type `t.stop` to stop the game!")
+        embed.set_footer(text="Type 't.stop' to stop the game!")
         await self.channel.send(embed=embed)
 
     async def send_correct_guess_embed(self, msg):
@@ -99,8 +99,10 @@ class GuessingGame():
                 return True
             else:
                 scoreboard.update_attr(msg.author, "guesses", 1)
+                scoreboard.update_serverlist(msg.author, msg.guild.id)
                 # No warning to avoid rate limiting
                 # asyncio.create_task(self.send_incorrect_guess_warning_embed())
+                asyncio.create_task(msg.add_reaction("❌"))
                 return False
         else:
             return False

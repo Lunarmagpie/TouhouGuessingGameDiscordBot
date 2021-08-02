@@ -40,6 +40,5 @@ class EndlessGuessingGame(GuessingGame):
             guessing_game_channel_lock[self.channel.id] = True
 
         while self.continue_games == True:
-            print("running")
             self.response_recieved_during_game = False
             await self.game_loop(custom_title)

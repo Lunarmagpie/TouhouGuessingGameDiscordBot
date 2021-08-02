@@ -8,7 +8,7 @@ class Leaderboard(commands.Cog):
     def __init__(self, bot: "Bot"):
         self.bot = bot
 
-    async def send_leaderboard_embed(self,ctx,res):
+    async def send_leaderboard_embed(self,ctx,res,title="Global - Top 20 players",icon="https://i.imgur.com/lO4WPig.png"):
         out = ""
 
         for i,user in enumerate(res):
@@ -27,9 +27,10 @@ class Leaderboard(commands.Cog):
             if i == 2: out += "\n"
 
         embed = discord.Embed(
-            title = "Top 20 Players",
+            # title = "Top 20 Players",
             color = 0xfcba03
         )
+        embed.set_author(name=title, icon_url=icon)
         embed.add_field(name='​', value=out, inline=True)
         await ctx.channel.send(embed=embed)
 
@@ -51,7 +52,13 @@ class Leaderboard(commands.Cog):
         # return
         # print(res.explain())
 
-        await self.send_leaderboard_embed(ctx,res)
+        title = f"{ctx.guild.name} - Top 20 players"
+        print(ctx.guild.icon_url)
+        if len(ctx.guild.icon_url) > 0:
+            icon = ctx.guild.icon_url
+        else:
+            icon = "https://i.imgur.com/S7cZnUD.png"
+        await self.send_leaderboard_embed(ctx,res,title,icon)
 
 def setup(bot: "Bot"):
     bot.add_cog(Leaderboard(bot))
