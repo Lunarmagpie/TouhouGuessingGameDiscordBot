@@ -17,6 +17,10 @@ class Guess(commands.Cog):
         await g.start()
 
     @commands.command()
+    async def stop(self):
+        pass
+
+    @commands.command()
     async def endless(self,ctx):
         g = EndlessGuessingGame(ctx.channel, self.bot, ctx.author)
         await g.start()
@@ -57,8 +61,9 @@ class Guess(commands.Cog):
         embed.add_field(name="t.challenge (@user)", value="Play 5 guessing games against another player.", inline="True")
         embed.add_field(name="t.profile (@user)", value="Show a player's stats, or yours if not specified.", inline="True")
         embed.add_field(name="t.leaderboard", value="Show the global point leaderboard.", inline="True")
-        embed.add_field(name="t.credits", value="Show the credits menu.", inline="True")
-        embed.add_field(name="t.vote", value="Vote for this bot.", inline="True")
+        embed.add_field(name="t.serverleaderboard", value="Show the server point leaderboard.", inline="True")
+        embed.add_field(name="t.credits", value="Show the bot's credits.", inline="True")
+        embed.add_field(name="t.vote", value="Vote for this bot on top.gg.", inline="True")
         # embed.add_field(name="t.serverleaderboard", value="Show the server point leaderboard.", inline="True")
         embed.add_field(name="t.help", value="Show this menu.", inline="True")
         await ctx.channel.send(embed=embed)

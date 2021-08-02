@@ -21,6 +21,16 @@ class Scoreboard(Database):
     def __init__(self) -> None:
         super().__init__("score", "score")
 
+    def add_commas_to_number(self, n):
+        n = str(n)
+        length = len(n)
+        out = ""
+        for index,value in enumerate(n):
+            out += value
+            if (length-index-1) % 3 == 0:
+                out += ","
+        return out[:-1]
+
     def get_base_player(self,player_id):
         tmp = copy.deepcopy(base_player)
         tmp["player_id"] = player_id

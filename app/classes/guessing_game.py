@@ -87,7 +87,7 @@ class GuessingGame():
                 return True
             elif msg.content.startswith("t."):
                 pass
-            elif msg.content.lower() == self.char["name"].lower() or msg.content.lower() == self.jp_char_name.lower() or msg.content.lower() == "free":
+            elif msg.content.lower() == self.char["name"].lower() or msg.content.lower() == self.jp_char_name.lower():
                 self.end_time = time.time()
                 self.points = math.floor(max(1, 10 - (self.end_time - self.start_time))) * 2 + (self.attempts - 1) * 3
                 self.winners.append(msg.author)

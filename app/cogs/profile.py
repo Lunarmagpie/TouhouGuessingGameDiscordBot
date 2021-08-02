@@ -19,7 +19,7 @@ class Profile(commands.Cog):
 
         embed = discord.Embed(
             color = 0xfcba03,
-            description=f"Total points acquired: **{player_info['score']}**\nTotal questions answered: **{player_info['games_won']}**"
+            description=f"Total points acquired: **{scoreboard.add_commas_to_number(player_info['score'])}**\nTotal questions answered: **{scoreboard.add_commas_to_number(player_info['games_won'])}**"
         )
         embed.set_author(name=f"{user.name}'s Statistics", icon_url=user.avatar_url)
         await ctx.channel.send(embed=embed)

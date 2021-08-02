@@ -23,7 +23,7 @@ class Leaderboard(commands.Cog):
             if i == 1: place_medal = ":second_place:"
             if i == 2: place_medal = ":third_place:"
 
-            out += (f"{place_medal} **{name}** - {user['score']} points\n")
+            out += (f"{place_medal} **{name}** - {scoreboard.add_commas_to_number(user['score'])} points\n")
             if i == 2: out += "\n"
 
         embed = discord.Embed(
