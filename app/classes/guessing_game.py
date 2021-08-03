@@ -65,7 +65,6 @@ class GuessingGame():
         scoreboard.update_attr(author, "guesses", 1)
         scoreboard.update_attr(author, "score", points)
         scoreboard.update_attr(author, "games_won", 1)
-        scoreboard.update_username(author)
         scoreboard.update_character_guessed_count(author,char_name)
         scoreboard.update_serverlist(author, guild)
 
@@ -96,9 +95,12 @@ class GuessingGame():
 
                 #add score to database
                 self.update_score(msg.guild.id, msg.author, self.points, self.char["name"].lower())
+                scoreboard.update_username(msg.author)
+                scoreboard.update_serverlist(msg.author, msg.guild.id)
                 return True
             else:
                 scoreboard.update_attr(msg.author, "guesses", 1)
+                scoreboard.update_username(msg.author)
                 scoreboard.update_serverlist(msg.author, msg.guild.id)
                 # No warning to avoid rate limiting
                 # asyncio.create_task(self.send_incorrect_guess_warning_embed())
