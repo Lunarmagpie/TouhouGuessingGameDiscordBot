@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from app.bot import Bot
 from app.util import scoreboard
+from ..config import CHARACTER_DATBASE
 
 class Profile(commands.Cog):
     def __init__(self, bot: "Bot"):
@@ -17,11 +18,22 @@ class Profile(commands.Cog):
             user = await self.bot.fetch_user(user)
             player_info = scoreboard.get_player_information(user)
 
+        c = scoreboard.add_commas_to_number
+        most_guessed = str.title(max(player_info['guessed_characters'], key=player_info['guessed_characters'].get))
+        url = [x for x in CHARACTER_DATBASE if x['name'] == most_guessed][0]['image']
         embed = discord.Embed(
             color = 0xfcba03,
-            description=f"Total points acquired: **{scoreboard.add_commas_to_number(player_info['score'])}**\nTotal questions answered: **{scoreboard.add_commas_to_number(player_info['games_won'])}**"
+            description=f'''\
+            :medal: Total points acquired: **{c(player_info['score'])}**
+            :grey_question: Total guesses: **{c(player_info['guesses'])}**
+            :star: Total correct guesses: **{c(player_info['games_won'])}**
+            :punch: Total challenges played: **{c(player_info['challenge_mode_games_played'])}**
+            :trophy: Total challenges won: **{c(player_info['challange_mode_games_won'])}**
+            :face_in_clouds: Most guessed character: **{most_guessed}**
+            '''
         )
         embed.set_author(name=f"{user.name}'s Statistics", icon_url=user.avatar_url)
+        embed.set_image(url=url)
         await ctx.channel.send(embed=embed)
 
 def setup(bot: "Bot"):
