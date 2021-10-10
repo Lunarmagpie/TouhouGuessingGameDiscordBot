@@ -11,7 +11,8 @@ base_player = {
     "challange_mode_games_won" : 0,
     "username" : "",
     "guessed_characters" : {},
-    "servers" : []
+    "servers" : [],
+    "favorite" : ""
 }
 
 class UserNotFoundError(Exception):
@@ -91,6 +92,17 @@ class Scoreboard(Database):
         {
             "$addToSet":{
                 f"servers" : server_id,
+            }
+        })
+
+    def update_favorite_chracter(self, user: discord.User, favorite: str):
+        player_id = user.id
+        player = self.get_player(player_id)
+        self.table.update_one(
+        {"player_id":player_id},
+        {
+            "$set":{
+                f"favorite" : favorite,
             }
         })
 
