@@ -2,3 +2,4 @@ discord
 pymongo[srv]
 asyncstdlib
 topggpy
+requests
