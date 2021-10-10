@@ -18,13 +18,13 @@ class Leaderboard(commands.Cog):
             except:
                 name = "None"
 
-            place_medal = f"{i+1}."
-            if i == 0: place_medal = ":first_place:"
-            if i == 1: place_medal = ":second_place:"
-            if i == 2: place_medal = ":third_place:"
+            if   i == 0: place_medal = ":first_place:"
+            elif i == 1: place_medal = ":second_place:"
+            elif i == 2: place_medal = ":third_place:"
+            else: place_medal = f"{i+1}."
 
             out += (f"{place_medal} **{name}** - {scoreboard.add_commas_to_number(user['score'])} points\n")
-            if i == 2: out += "\n"
+            # if i == 2: out += "\n"
 
         embed = discord.Embed(
             # title = "Top 20 Players",
