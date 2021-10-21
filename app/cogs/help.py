@@ -21,7 +21,7 @@ class Help(commands.Cog):
         embed.add_field(name="t.favorite character", value="Set your favorite character.", inline="True")
         embed.add_field(name="t.leaderboard", value="Show the global point leaderboard.", inline="True")
         embed.add_field(name="t.serverleaderboard", value="Show the server point leaderboard.", inline="True")
-        embed.add_field(name="t.credits", value="Show the bot's credits.", inline="True")
+        embed.add_field(name="t.credits", value="Show the bot's credits & contact information.", inline="True")
         embed.add_field(name="t.vote", value="Vote for this bot on top.gg.", inline="True")
         embed.add_field(name="t.help", value="Show this menu.", inline="True")
         embed.add_field(name="** **", value="** **", inline="True")
