@@ -31,6 +31,9 @@ class Credits(commands.Cog):
                 <@!318076068290494466>
                 
                 Please contact either of us if you have any questions, or want to request removal of your data. We'll try to respond as soon as possible!
+                
+            **Source**:
+                If you want to view the source code or contribute to the project, it is available at https://github.com/Lunarmagpie/TouhouGuessingGameDiscordBot
             """
         )
         await ctx.channel.send(embed=embed)
