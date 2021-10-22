@@ -20,14 +20,20 @@ class Credits(commands.Cog):
             out += (f"{user.name}: {player['score']}\n")
         
         embed = discord.Embed(
-            title = "Credits",
+            title = "💮 Credits",
             color = 0xfcba03,
+            icon= "https://b.catgirlsare.sexy/GmYW8Bs86OFs.png",
             description=f"""
-            💮 **Artists**:
+           **Artists**:
                 dairi: https://www.pixiv.net/en/users/4920496\nkaoru: https://www.pixiv.net/en/users/743845
-            💮 **Development**:
+           **Development**:
                 <@!318039587412901890>
                 <@!318076068290494466>
+                
+                Please contact either of us if you have any questions, or want to request removal of your data. We'll try to respond as soon as possible!
+                
+            **Source**:
+                If you want to view the source code or contribute to the project, it is available at https://github.com/Lunarmagpie/TouhouGuessingGameDiscordBot
             """
         )
         await ctx.channel.send(embed=embed)
