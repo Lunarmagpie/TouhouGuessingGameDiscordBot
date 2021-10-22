@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands,tasks
+from app.util import scoreboard
 import topgg
 
 import time
@@ -31,9 +32,10 @@ class Bot(commands.Bot):
             return
 
         try:
+            scoreboard.time_last_updated(message.author)
             await self.process_commands(message)
-        except Exception:
-            pass
+        except Exception as e:
+            print(e)
 
     async def on_connect(self):
         print(f"Logged in as {self.user} after {time.perf_counter():,.3f}s")

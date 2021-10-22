@@ -8,7 +8,6 @@ import topgg
 class Topgg(commands.Cog):
     def __init__(self, bot: "Bot"):
         self.bot = bot
-        self.update_stats.start()
 
     @tasks.loop(minutes=30)
     async def update_stats(self):
