@@ -25,6 +25,14 @@ class Bot(commands.Bot):
         return super().run(os.environ["thtoken"])
 
 
+    async def process_commands(self, message):
+        for cmd in self.command_prefix(self, message):
+            if message.content.startswith(cmd):
+                scoreboard.time_last_updated(message.author)
+                break
+
+        return await super().process_commands(message)
+
     async def on_message(self, message: discord.Message):
         if message.author.bot:
             return
@@ -32,7 +40,6 @@ class Bot(commands.Bot):
             return
 
         try:
-            scoreboard.time_last_updated(message.author)
             await self.process_commands(message)
         except Exception as e:
             print(e)
