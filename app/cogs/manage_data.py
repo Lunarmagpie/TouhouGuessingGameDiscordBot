@@ -11,6 +11,7 @@ class Manage_Data(commands.Cog):
 
     @tasks.loop(hours=12)
     async def remove_old_data(self):
+        print("Attempting to remove old data...")
         try:
             scoreboard.return_old_data(self.bot)
         except Exception as e:
