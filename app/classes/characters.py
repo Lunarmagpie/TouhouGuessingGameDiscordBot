@@ -5,6 +5,7 @@ import copy
 base_character = {
     "name" : "",
     "total_correct_guesses": 0,
+    "total_guesses": 0,
     "total_favorites": 0,
     "total_times_appeared": 0
 }
@@ -27,7 +28,16 @@ class Characters(Database):
         {"name": char_name},
         {
             "$inc": {
-                f"total_times_appeared": 1,
+                "total_times_appeared": 1,
+            }
+        })
+
+    def update_guesses(self, char_name):
+        self.table.update_one(
+        {"name": char_name},
+        {
+            "$inc": {
+                f"total_guesses": 1,
             }
         })
 
@@ -36,15 +46,16 @@ class Characters(Database):
         {"name": char_name},
         {
             "$inc": {
-                f"total_correct_guesses": 1,
+                "total_guesses": 1,
+                "total_correct_guesses": 1,
             }
         })
 
-    def update_favorites(self, char_name: str, is_decrement: bool):
+    def update_favorites(self, char_name: str, decrement: bool):
         self.table.update_one(
         {"name": char_name},
         {
             "$inc": {
-                f"total_favorites": 1 if not is_decrement else -1,
+                f"total_favorites": -1 if decrement else 1,
             }
         })
