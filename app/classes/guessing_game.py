@@ -79,8 +79,8 @@ class GuessingGame():
         scoreboard.update_serverlist(author, guild)
 
         # Update character correct guesses
-        characters.update_correct_guesses(self.char_name.title())
-        characters.update_times_appeared(self.char_name.title())
+        characters.update_correct_guesses(self.char['name'])
+        characters.update_times_appeared(self.char['name'])
 
     def end_game(self):
         try:
