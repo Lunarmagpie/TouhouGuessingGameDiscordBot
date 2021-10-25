@@ -5,6 +5,7 @@ import copy
 base_character = {
     "name" : "",
     "total_correct_guesses": 0,
+    "total_guesses": 0,
     "total_favorites": 0,
     "total_times_appeared": 0
 }
