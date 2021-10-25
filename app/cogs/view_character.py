@@ -19,7 +19,7 @@ class View_character(commands.Cog):
                         url = [x for x in CHARACTER_DATBASE if x['name'] == char_name][0]['image']
                         embed = discord.Embed(
                             color = 0xfcba03,
-                            title = name.title(),
+                            title = char_name,
                             description=f'''\
                             :grey_question: Guess Rate: **{100 if char["total_times_appeared"] == 0 else int(
                                 char["total_correct_guesses"] / char["total_times_appeared"] * 100)}%**
