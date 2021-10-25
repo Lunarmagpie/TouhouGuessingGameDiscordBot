@@ -71,16 +71,16 @@ class GuessingGame():
     async def send_game_already_running(self):
         await self.channel.send("Game already running!")
 
-    def update_score(self, guild, author, points, char_name):
+    def update_score(self, guild, author, points):
         scoreboard.update_attr(author, "guesses", 1)
         scoreboard.update_attr(author, "score", points)
         scoreboard.update_attr(author, "games_won", 1)
-        scoreboard.update_character_guessed_count(author,char_name)
+        scoreboard.update_character_guessed_count(author,self.char_name)
         scoreboard.update_serverlist(author, guild)
 
         # Update character correct guesses
-        characters.update_correct_guesses(char_name.title())
-        characters.update_times_appeared(char_name.title())
+        characters.update_correct_guesses(self.char_name.title())
+        characters.update_times_appeared(self.char_name.title())
 
     def end_game(self):
         try:
@@ -101,7 +101,6 @@ class GuessingGame():
             elif msg.content.startswith("t."):
                 pass
             elif msg.content.lower() == self.char["name"].lower() or msg.content.lower() == self.jp_char_name.lower():
-                char_name = self.char["name"].lower()
                 self.end_time = time.time()
                 self.points = math.floor(max(1, 10 - (self.end_time - self.start_time))) * 2 + (self.attempts - 1) * 3
                 self.winners.append(msg.author)
@@ -109,7 +108,7 @@ class GuessingGame():
                 self.end_game()
 
                 #add score to database
-                self.update_score(msg.guild.id, msg.author, self.points, char_name)
+                self.update_score(msg.guild.id, msg.author, self.points)
                 scoreboard.update_username(msg.author)
                 scoreboard.update_serverlist(msg.author, msg.guild.id)
 
@@ -118,6 +117,7 @@ class GuessingGame():
                 scoreboard.update_attr(msg.author, "guesses", 1)
                 scoreboard.update_username(msg.author)
                 scoreboard.update_serverlist(msg.author, msg.guild.id)
+                characters.update_guesses(self.char_name.title())
                 # No warning to avoid rate limiting
                 # asyncio.create_task(self.send_incorrect_guess_warning_embed())
                 asyncio.create_task(msg.add_reaction("❌"))
