@@ -15,7 +15,7 @@ class Guess(commands.Cog):
         await g.start()
 
     @commands.command()
-    async def stop(self):
+    async def stop(self,ctx):
         pass
 
     @commands.command()

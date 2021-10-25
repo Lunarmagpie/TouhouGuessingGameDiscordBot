@@ -50,6 +50,13 @@ class Scoreboard(Database):
             self.table.insert_one(base_player)
             return base_player
 
+    def get_every_player(self):
+        out = []
+        res = self.table.find()
+        for i in range(0,self.table.count()):
+            out.append(res[i])
+        return out
+
     def is_in_database(self, player_id):
         res = self.table.find({"player_id": player_id})
         if res.count() >= 1:

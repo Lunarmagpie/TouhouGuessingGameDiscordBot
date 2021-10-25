@@ -1,5 +1,6 @@
 from ..config import CHARACTER_DATBASE
 from app.util import scoreboard
+from app.util import characters
 import random
 import discord
 import time
@@ -51,11 +52,20 @@ class GuessingGame():
     async def send_timeout_embed(self):
         embed = discord.Embed(title=f"Time's up!", color = 0xDD2E44, description=f"The character is **{self.char['name']}**.")
         embed.set_image(url=self.char["image"])
+
+        # Update number of games played for the character
+        characters.update_times_appeared(self.char['name'])
+
+
         await self.channel.send(embed=embed)
 
     async def send_game_ended_by_user_embed(self):
         embed = discord.Embed(title=f"The game was ended!", color = 0x3B88C3, description=f"The character is **{self.char['name']}**.")
         embed.set_image(url=self.char["image"])
+
+        # Update number of games played for the character
+        characters.update_times_appeared(self.char['name'])
+
         await self.channel.send(embed=embed)
 
     async def send_game_already_running(self):
@@ -67,6 +77,10 @@ class GuessingGame():
         scoreboard.update_attr(author, "games_won", 1)
         scoreboard.update_character_guessed_count(author,char_name)
         scoreboard.update_serverlist(author, guild)
+
+        # Update character correct guesses
+        characters.update_correct_guesses(char_name.title())
+        characters.update_times_appeared(char_name.title())
 
     def end_game(self):
         try:
@@ -87,6 +101,7 @@ class GuessingGame():
             elif msg.content.startswith("t."):
                 pass
             elif msg.content.lower() == self.char["name"].lower() or msg.content.lower() == self.jp_char_name.lower():
+                char_name = self.char["name"].lower()
                 self.end_time = time.time()
                 self.points = math.floor(max(1, 10 - (self.end_time - self.start_time))) * 2 + (self.attempts - 1) * 3
                 self.winners.append(msg.author)
@@ -94,9 +109,10 @@ class GuessingGame():
                 self.end_game()
 
                 #add score to database
-                self.update_score(msg.guild.id, msg.author, self.points, self.char["name"].lower())
+                self.update_score(msg.guild.id, msg.author, self.points, char_name)
                 scoreboard.update_username(msg.author)
                 scoreboard.update_serverlist(msg.author, msg.guild.id)
+
                 return True
             else:
                 scoreboard.update_attr(msg.author, "guesses", 1)
