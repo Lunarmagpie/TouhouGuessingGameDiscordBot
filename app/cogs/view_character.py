@@ -14,8 +14,9 @@ class View_character(commands.Cog):
         nameLower = name.lower()
         for index in CHARACTER_DATBASE:
             if nameLower == index["name"].lower():
-                        char = characters.get_character(name.title())
-                        url = [x for x in CHARACTER_DATBASE if x['name'] == name.title()][0]['image']
+                        char_name = name.title().replace("No", "no")
+                        char = characters.get_character(char_name)
+                        url = [x for x in CHARACTER_DATBASE if x['name'] == char_name][0]['image']
                         embed = discord.Embed(
                             color = 0xfcba03,
                             title = name.title(),
