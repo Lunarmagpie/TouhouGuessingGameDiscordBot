@@ -79,8 +79,8 @@ class GuessingGame():
         scoreboard.update_serverlist(author, guild)
 
         # Update character correct guesses
-        characters.update_correct_guesses(self.char_name.title())
-        characters.update_times_appeared(self.char_name.title())
+        characters.update_correct_guesses(self.char['name'])
+        characters.update_times_appeared(self.char['name'])
 
     def end_game(self):
         try:
@@ -117,7 +117,7 @@ class GuessingGame():
                 scoreboard.update_attr(msg.author, "guesses", 1)
                 scoreboard.update_username(msg.author)
                 scoreboard.update_serverlist(msg.author, msg.guild.id)
-                characters.update_guesses(self.char_name.title())
+                characters.update_guesses(self.char_name)
                 # No warning to avoid rate limiting
                 # asyncio.create_task(self.send_incorrect_guess_warning_embed())
                 asyncio.create_task(msg.add_reaction("❌"))
@@ -144,3 +144,4 @@ class GuessingGame():
             guessing_game_channel_lock[self.channel.id] = True
 
         await self.game_loop(custom_title)
+        
