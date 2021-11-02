@@ -1,6 +1,7 @@
 from ..config import CHARACTER_DATBASE
 from app.util import scoreboard
 from app.util import characters
+from app.nicknames import nicknames
 import random
 import discord
 import time
@@ -94,13 +95,15 @@ class GuessingGame():
 
     def check_guess(self, msg):
         if msg.channel == self.channel and not msg.author.bot:
+            char_name = nicknames.get(msg.content.lower(), msg.content)
+
             if msg.content == "t.stop" and self.can_stop_game:
                 asyncio.create_task(self.send_game_ended_by_user_embed())
                 self.end_game()
                 return True
             elif msg.content.startswith("t."):
                 pass
-            elif msg.content.lower() == self.char["name"].lower() or msg.content.lower() == self.jp_char_name.lower():
+            elif char_name.lower() == self.char["name"].lower() or char_name.lower() == self.jp_char_name.lower():
                 self.end_time = time.time()
                 self.points = math.floor(max(1, 10 - (self.end_time - self.start_time))) * 2 + (self.attempts - 1) * 3
                 self.winners.append(msg.author)
