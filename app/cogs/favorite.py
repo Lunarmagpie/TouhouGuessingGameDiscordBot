@@ -4,6 +4,7 @@ from app.bot import Bot
 from app.util import scoreboard
 from app.util import characters
 from ..config import CHARACTER_DATBASE
+from contextlib import suppress
 
 class Favorite(commands.Cog):
     def __init__(self, bot: "Bot"):
@@ -14,8 +15,9 @@ class Favorite(commands.Cog):
         arg1 = " ".join(arg)
         for index in CHARACTER_DATBASE:
             if arg1.lower() == index["name"].lower():
-                characters.update_favorites(scoreboard.get_player_information(ctx.author)["favorite"], True)
-                characters.update_favorites(index["name"], False)
+                with suppress(KeyError):
+                    characters.update_favorites(scoreboard.get_player_information(ctx.author)["favorite"], True)
+                    characters.update_favorites(index["name"], False)
 
 
                 scoreboard.update_favorite_chracter(ctx.author, index["name"])
