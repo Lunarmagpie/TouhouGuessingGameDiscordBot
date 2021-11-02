@@ -9,7 +9,7 @@ class View_character(commands.Cog):
     def __init__(self, bot: "Bot"):
         self.bot = bot
 
-    @commands.command()
+    @commands.command(aliases=['c', 'info'])
     async def character(self,ctx,*arg: str):
         name = " ".join(arg)
         name = name.lower()
@@ -17,14 +17,15 @@ class View_character(commands.Cog):
 
         for index in CHARACTER_DATBASE:
             if name == index["name"].lower():
-                        char = characters.get_character(name.title())
-                        url = [x for x in CHARACTER_DATBASE if x['name'] == name.title()][0]['image']
+                        char_name = name.title().replace("No", "no")
+                        char = characters.get_character(char_name)
+                        url = [x for x in CHARACTER_DATBASE if x['name'] == char_name][0]['image']
                         embed = discord.Embed(
                             color = 0xfcba03,
-                            title = name.title(),
+                            title = char_name,
                             description=f'''\
-                            :grey_question: Guess Rate: **{100 if char["total_times_appeared"] == 0 else int(
-                                char["total_correct_guesses"] / char["total_times_appeared"] * 100)}%**
+                            :grey_question: Guess Rate: **{100 if char["total_guesses"] == 0 else int(
+                                char["total_correct_guesses"] / char["total_guesses"] * 100)}%**
                             :yellow_heart: Favorites: **{char["total_favorites"]}**
                             '''
                         )
