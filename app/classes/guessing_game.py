@@ -28,13 +28,6 @@ class GuessingGame():
         self.char = CHARACTER_DATBASE[self.character_index]
         self.char_name = self.char["name"]
 
-        if len(self.char_name.split(" ")) == 2:
-            self.jp_char_name = self.char_name.split(" ")
-            self.jp_char_name.reverse()
-            self.jp_char_name = " ".join(self.jp_char_name)
-        else:
-            self.jp_char_name = self.char_name
-
     async def send_question_embed(self, title):
         embed = discord.Embed(title=title, color = 0x3B88C3, description="Guess by typing the character's name in chat.")
         embed.set_image(url=self.char["silhouette"])
@@ -103,7 +96,7 @@ class GuessingGame():
                 return True
             elif msg.content.startswith("t."):
                 pass
-            elif char_name.lower() == self.char["name"].lower() or char_name.lower() == self.jp_char_name.lower():
+            elif char_name.lower() == self.char["name"].lower():
                 self.end_time = time.time()
                 self.points = math.floor(max(1, 10 - (self.end_time - self.start_time))) * 2 + (self.attempts - 1) * 3
                 self.winners.append(msg.author)

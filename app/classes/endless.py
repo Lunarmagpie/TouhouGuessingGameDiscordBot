@@ -15,7 +15,8 @@ class EndlessGuessingGame(GuessingGame):
 
     def check_guess(self, msg):
         if msg.content != "t.stop":
-            self.response_recieved_during_game = True
+            #self.response_recieved_during_game = True
+            pass
         return super().check_guess(msg)
 
     async def send_game_ended_by_user_embed(self):
