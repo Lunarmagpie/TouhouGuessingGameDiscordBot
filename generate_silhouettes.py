@@ -38,10 +38,15 @@ def center(img, name):
     result.save(f"data/images/{name}.png", 'PNG')
     return result
 
-def main():
+def fix_specific_character(name):
     for i,char in enumerate(CHARACTER_DATBASE):
-        create_silhouette(char['image'], char['name'])
-        print(f"{i} - {char}")
+        if name == char['name']:
+            center(char['image'], char['name'])
+            create_silhouette(char['image'], char['name'])
+            print(f"{i} - {char}")
+
+def main():
+    fix_specific_character("Yuuma Toutetsu")
 
 if __name__ == "__main__":
     main()
