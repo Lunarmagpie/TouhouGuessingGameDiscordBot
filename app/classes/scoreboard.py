@@ -1,5 +1,6 @@
+from pincer.objects import User
+
 from .database import Database
-import discord
 import copy
 from time import time
 
@@ -75,7 +76,7 @@ class Scoreboard(Database):
             }
         })
 
-    def update_attr(self, user: discord.User, attr: str, increment: int) -> None:
+    def update_attr(self, user: User, attr: str, increment: int) -> None:
         player_id = user.id
         player = self.get_player(player_id)
         self.table.update_one(
@@ -86,7 +87,7 @@ class Scoreboard(Database):
                 }
             })
 
-    def time_last_updated(self, user: discord.User):
+    def time_last_updated(self, user: User):
         player_id = user.id
         player = self.get_player(player_id)
         self.table.update_one(
@@ -97,7 +98,7 @@ class Scoreboard(Database):
                 }
             })
 
-    def update_character_guessed_count(self, user: discord.User, character_name: str):
+    def update_character_guessed_count(self, user: User, character_name: str):
         player_id = user.id
         player = self.get_player(player_id)
         self.table.update_one(
@@ -108,7 +109,7 @@ class Scoreboard(Database):
                 }
             })
 
-    def update_username(self, user: discord.User):
+    def update_username(self, user: User):
         player_id = user.id
         player = self.get_player(player_id)
         self.table.update_one(
@@ -119,7 +120,7 @@ class Scoreboard(Database):
                 }
             })
 
-    def update_serverlist(self, user: discord.User, server_id: int):
+    def update_serverlist(self, user: User, server_id: int):
         player_id = user.id
         player = self.get_player(player_id)
         self.table.update_one(
@@ -130,7 +131,7 @@ class Scoreboard(Database):
                 }
             })
 
-    def update_favorite_chracter(self, user: discord.User, favorite: str):
+    def update_favorite_chracter(self, user: User, favorite: str):
         player_id = user.id
         player = self.get_player(player_id)
         self.table.update_one(
@@ -141,6 +142,6 @@ class Scoreboard(Database):
                 }
             })
 
-    def get_player_information(self, user: discord.User) -> dict:
+    def get_player_information(self, user: User) -> dict:
         player_info = self.get_player(user.id)
         return player_info

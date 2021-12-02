@@ -1,48 +1,29 @@
-import discord
-from discord.ext import commands,tasks
+from pincer import Client
 from app.util import scoreboard
-import topgg
+from glob import glob
 
 import time
 import os
 from . import config
 
-class Bot(commands.Bot):
-    def __init__(self) -> None:
-        super().__init__(
-            command_prefix=commands.when_mentioned_or("t.", ),help_command=None
-        )
-
-        for filename in os.listdir(os.path.join("app", "cogs")):
-            if filename.endswith("py"):
-                self.load_extension(f"app.cogs.{filename[:-3]}")
+class Bot(Client):
+    def __init__(self, *args, **kwargs) -> None:
+        self.load_cogs()
+        super().__init__(*args, **kwargs)
 
         self.dbl_token = os.environ["thdbltoken"]
-        self.topggpy = topgg.DBLClient(self, self.dbl_token)
+        # self.topggpy = topgg.DBLClient(self, self.dbl_token)
+
+
+    def load_cogs(self):
+        """Load all cogs from the `cogs` directory."""
+        for cog in glob("app/pincer_cogs/*.py"):
+            self.load_cog(cog.replace("/", ".").replace("\\", ".")[:-3])
 
     def run(self):
         print("Touhou Bot!")
-        return super().run(os.environ["thtoken"])
+        return super().run()
 
-
-    async def process_commands(self, message):
-        for cmd in self.command_prefix(self, message):
-            if message.content.startswith(cmd):
-                scoreboard.time_last_updated(message.author)
-                break
-
-        return await super().process_commands(message)
-
-    async def on_message(self, message: discord.Message):
-        if message.author.bot:
-            return
-        if not message.guild:
-            return
-
-        try:
-            await self.process_commands(message)
-        except Exception as e:
-            print(e)
 
     async def on_connect(self):
         print(f"Logged in as {self.user} after {time.perf_counter():,.3f}s")

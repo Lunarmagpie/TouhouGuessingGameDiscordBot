@@ -1,9 +1,10 @@
 from app.bot import Bot
+import os
 
 def main():
     #Entrypoint for bot
     global bot
-    bot = Bot()
+    bot = Bot(os.environ["thtoken"])
     bot.run()
 
 if __name__ == "__main__":
