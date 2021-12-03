@@ -1,10 +1,9 @@
 from pincer import Client
-from app.util import scoreboard
-from glob import glob
 
+from glob import glob
 import time
 import os
-from . import config
+
 
 class Bot(Client):
     def __init__(self, *args, **kwargs) -> None:
@@ -14,7 +13,6 @@ class Bot(Client):
         self.dbl_token = os.environ["thdbltoken"]
         # self.topggpy = topgg.DBLClient(self, self.dbl_token)
 
-
     def load_cogs(self):
         """Load all cogs from the `cogs` directory."""
         for cog in glob("app/pincer_cogs/*.py"):
@@ -23,7 +21,6 @@ class Bot(Client):
     def run(self):
         print("Touhou Bot!")
         return super().run()
-
 
     async def on_connect(self):
         print(f"Logged in as {self.user} after {time.perf_counter():,.3f}s")

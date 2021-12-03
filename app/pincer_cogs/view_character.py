@@ -11,10 +11,10 @@ class ViewCharacterCog:
     def __init__(self, bot: Client):
         self.bot = bot
 
-    @command
+    @command(description="View a character")
     async def view_character(self, name: CommandArg[
         str,
-        Description["View a character"]  # type: ignore # noqa: F722
+        Description["Character name"]  # type: ignore # noqa: F722
     ]):
         name = name.lower()
         name = nicknames.get(name, name).lower()

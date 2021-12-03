@@ -11,13 +11,13 @@ class Profile(Client):
     def __init__(self, bot: "Bot"):
         self.bot = bot
 
-    @command
+    @command(description="Get your profile or a user's profile")
     async def profile(
         self,
         ctx: MessageContext,
         user: CommandArg[
             User,
-            Description["Get your profile or a user's profile"]  # type: ignore # noqa: F722
+            Description["A user who's profile you want to see"]  # type: ignore # noqa: F722
         ] = None
     ):
         if user is None:

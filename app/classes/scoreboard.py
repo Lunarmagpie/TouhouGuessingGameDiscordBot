@@ -116,7 +116,7 @@ class Scoreboard(Database):
             {"player_id": player_id},
             {
                 "$set": {
-                    "username": user.name,
+                    "username": user.username,
                 }
             })
 
