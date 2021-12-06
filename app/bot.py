@@ -23,5 +23,6 @@ class Bot(Client):
         print("Touhou Bot!")
         return super().run()
 
-    async def on_connect(self):
-        print(f"Logged in as {self.user} after {time.perf_counter():,.3f}s")
+    @Client.event
+    async def on_ready(self):
+        print(f"Logged in after {time.perf_counter():,.3f}s")

@@ -6,7 +6,7 @@ import os
 def main():
     # Entrypoint for bot
     global bot
-    bot = Bot(os.environ["thtoken"], intents=Intents.GUILD_MESSAGES)
+    bot = Bot(os.environ["thtoken"], intents=Intents.all())
     bot.run()
 
 
