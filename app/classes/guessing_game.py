@@ -98,9 +98,7 @@ class GuessingGame():
         self.end_game()
 
     def check_guess(self, msg):
-        print("here1")
         if msg.channel_id == self.channel.id and not msg.author.bot:
-            print("here")
             char_name = nicknames.get(msg.content.lower(), msg.content)
 
             if msg.content == "t.stop" and self.can_stop_game:
@@ -114,7 +112,6 @@ class GuessingGame():
                 self.points = math.floor(
                     max(1, 10 - (self.end_time - self.start_time))) * 2 + (self.attempts - 1) * 3
                 self.winners.append(msg.author)
-                asyncio.create_task(self.send_correct_guess_embed(msg))
                 self.end_game()
 
                 # add score to database
@@ -128,9 +125,6 @@ class GuessingGame():
                 scoreboard.update_username(msg.author)
                 scoreboard.update_serverlist(msg.author, msg.guild_id)
                 characters.update_guesses(self.char_name)
-                # No warning to avoid rate limiting
-                # asyncio.create_task(self.send_incorrect_guess_warning_embed())
-                asyncio.create_task(msg.react("❌"))
                 return False
         else:
             return False
@@ -143,7 +137,10 @@ class GuessingGame():
         try:
             async for msg in self.bot.loop_for('on_message', iteration_timeout=20):
                 if self.check_guess(msg):
-                    return
+                    await self.send_correct_guess_embed(msg)
+                else:
+                    await msg.react("❌")
+
         except TimeoutError:
             await self.timeout()
         await asyncio.sleep(0.3)

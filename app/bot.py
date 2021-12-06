@@ -10,7 +10,8 @@ class Bot(Client):
         self.load_cogs()
         super().__init__(*args, **kwargs)
 
-        self.dbl_token = os.environ["thdbltoken"]
+        # self.dbl_token = os.environ["thdbltoken"]
+        self.dbl_token = None
         # self.topggpy = topgg.DBLClient(self, self.dbl_token)
 
     def load_cogs(self):

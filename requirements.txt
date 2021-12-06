@@ -1,5 +1,5 @@
 discord
-pymongo[srv]
+motor
 asyncstdlib
 topggpy
 requests

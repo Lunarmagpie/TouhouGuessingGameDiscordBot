@@ -44,9 +44,10 @@ class Scoreboard(Database):
 
     def get_player(self, player_id):
         res = self.table.find({"player_id": player_id})
-        if res.count() >= 1:
+
+        try:
             return res[0]
-        else:
+        except Exception:
             base_player = self.get_base_player(player_id)
             self.table.insert_one(base_player)
             return base_player
@@ -54,13 +55,13 @@ class Scoreboard(Database):
     def get_every_player(self):
         out = []
         res = self.table.find()
-        for i in range(0,self.table.count()):
+        for i in range(0, self.table.count()):
             out.append(res[i])
         return out
 
     def is_in_database(self, player_id):
-        res = self.table.find({"player_id": player_id})
-        if res.count() >= 1:
+        count = self.table.count_documents({"player_id": player_id})
+        if count >= 1:
             return True
 
     def return_old_data(self, bot):
