@@ -3,6 +3,7 @@ from discord.ext import commands,tasks
 from app.util import scoreboard
 import topgg
 
+import asyncio
 import time
 import os
 from . import config
@@ -46,3 +47,4 @@ class Bot(commands.Bot):
 
     async def on_connect(self):
         print(f"Logged in as {self.user} after {time.perf_counter():,.3f}s")
+        asyncio.create_task(self.manage_data.call_remove_old_data())

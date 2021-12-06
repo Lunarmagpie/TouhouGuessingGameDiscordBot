@@ -63,7 +63,7 @@ class Scoreboard(Database):
             return True
 
     def return_old_data(self, bot):
-        servers = bot.guilds
+        servers = [guild.id for guild in bot.guilds]
         self.table.remove({
             "servers": {
                 "$not": {
