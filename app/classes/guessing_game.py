@@ -62,7 +62,7 @@ class GuessingGame():
 
         await self.channel.send(embed)
 
-    async def send_game_ended_by_user_embed(self):
+    async def send_game_ended_by_user_embed(self, ctx: MessageContext):
         embed = Embed(title="The game was ended!", color=0x3B88C3,
                       description=f"The character is **{self.char['name']}**.")
         embed.set_image(url=self.char["image"])
@@ -70,7 +70,7 @@ class GuessingGame():
         # Update number of games played for the character
         characters.update_times_appeared(self.char['name'])
 
-        await self.channel.send(embed)
+        await ctx.send(embed)
 
     async def send_game_already_running(self):
         await self.ctx.send("Game already running!")
@@ -107,6 +107,11 @@ class GuessingGame():
             elif msg.content.startswith("t."):
                 pass
             elif char_name.lower() == self.char["name"].lower():
+                self.end_time = time.time()
+                self.points = math.floor(
+                    max(1, 10 - (self.end_time - self.start_time))) * 2 + (self.attempts - 1) * 3
+                self.winners.append(msg.author)
+                self.end_game()
                 asyncio.create_task(self.update_database_win(msg))
                 return True
             else:
@@ -116,12 +121,6 @@ class GuessingGame():
             return False
 
     async def update_database_win(self, msg):
-        self.end_time = time.time()
-        self.points = math.floor(
-            max(1, 10 - (self.end_time - self.start_time))) * 2 + (self.attempts - 1) * 3
-        self.winners.append(msg.author)
-        self.end_game()
-
         # add score to database
         self.update_score(msg.guild_id, msg.author, self.points)
         scoreboard.update_username(msg.author)
@@ -139,7 +138,7 @@ class GuessingGame():
         await self.send_question_embed(custom_title)
 
         try:
-            async for msg in self.bot.loop_for('on_message', iteration_timeout=20):
+            async for msg in self.bot.loop_for('on_message', loop_timeout=20):
                 if self.check_guess(msg):
                     await self.send_correct_guess_embed(msg)
                     break
@@ -155,6 +154,7 @@ class GuessingGame():
             await self.send_game_already_running()
             return
         else:
-            guessing_game_channel_lock[self.channel.id] = True
+            guessing_game_channel_lock[self.channel.id] = self
 
-        await self.game_loop(custom_title)
+        self.game_loop = asyncio.create_task(self.game_loop(custom_title))
+        await self.game_loop
