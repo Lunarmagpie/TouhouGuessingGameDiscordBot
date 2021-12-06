@@ -19,7 +19,11 @@ class Guess:
         await g.start()
 
     @command(description="Stop a guessing game.")
-    async def stop():
+    async def stop(self, ctx: MessageContext):
+
+        if ctx.channel_id in self.bot.games:
+            self.bot.games.pop(ctx.channel_id)
+
         pass
 
     # @command()

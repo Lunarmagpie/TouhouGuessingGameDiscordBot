@@ -50,7 +50,6 @@ class GuessingGame():
         await self.channel.send(embed)
 
     async def send_incorrect_guess_warning_embed(self):
-        #embed = discord.Embed(title=f" Incorrect! {self.attempts} Attempt{'s' if self.attempts != 1 else ''} remaining.", color = 0xDD2E44)
         await self.channel.send("**Incorrect!**")
 
     async def send_timeout_embed(self):
@@ -74,7 +73,7 @@ class GuessingGame():
         await self.channel.send(embed)
 
     async def send_game_already_running(self):
-        await self.channel.send("Game already running!")
+        await self.ctx.send("Game already running!")
 
     def update_score(self, guild, author, points):
         scoreboard.update_attr(author, "guesses", 1)
@@ -108,26 +107,31 @@ class GuessingGame():
             elif msg.content.startswith("t."):
                 pass
             elif char_name.lower() == self.char["name"].lower():
-                self.end_time = time.time()
-                self.points = math.floor(
-                    max(1, 10 - (self.end_time - self.start_time))) * 2 + (self.attempts - 1) * 3
-                self.winners.append(msg.author)
-                self.end_game()
-
-                # add score to database
-                self.update_score(msg.guild_id, msg.author, self.points)
-                scoreboard.update_username(msg.author)
-                scoreboard.update_serverlist(msg.author, msg.guild_id)
-
+                asyncio.create_task(self.update_database_win(msg))
                 return True
             else:
-                scoreboard.update_attr(msg.author, "guesses", 1)
-                scoreboard.update_username(msg.author)
-                scoreboard.update_serverlist(msg.author, msg.guild_id)
-                characters.update_guesses(self.char_name)
+                asyncio.create_task(self.update_database_loss(msg))
                 return False
         else:
             return False
+
+    async def update_database_win(self, msg):
+        self.end_time = time.time()
+        self.points = math.floor(
+            max(1, 10 - (self.end_time - self.start_time))) * 2 + (self.attempts - 1) * 3
+        self.winners.append(msg.author)
+        self.end_game()
+
+        # add score to database
+        self.update_score(msg.guild_id, msg.author, self.points)
+        scoreboard.update_username(msg.author)
+        scoreboard.update_serverlist(msg.author, msg.guild_id)
+
+    async def update_database_loss(self, msg):
+        scoreboard.update_attr(msg.author, "guesses", 1)
+        scoreboard.update_username(msg.author)
+        scoreboard.update_serverlist(msg.author, msg.guild_id)
+        characters.update_guesses(self.char_name)
 
     async def game_loop(self, custom_title):
         self.randomize_character()
@@ -138,6 +142,7 @@ class GuessingGame():
             async for msg in self.bot.loop_for('on_message', iteration_timeout=20):
                 if self.check_guess(msg):
                     await self.send_correct_guess_embed(msg)
+                    break
                 else:
                     await msg.react("❌")
 

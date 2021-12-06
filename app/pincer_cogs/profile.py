@@ -57,9 +57,10 @@ class Profile(Client):
             '''
         )
 
-        embed.set_author(name=f"{user.username}'s Profile",
-                         url=user.get_avatar_url())
-        embed.set_image(url=url)
+        embed.set_author(name=f"{user.username}'s Profile", url=user.get_avatar_url())
+
+        if url:
+            embed.set_image(url=url)
         return embed
 
 
