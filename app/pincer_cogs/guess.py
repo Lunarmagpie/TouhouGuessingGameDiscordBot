@@ -24,6 +24,8 @@ class Guess:
             guessing_game_channel_lock[ctx.channel_id].game_loop.cancel()
             await guessing_game_channel_lock[ctx.channel_id].send_game_ended_by_user_embed(ctx)
             del guessing_game_channel_lock[ctx.channel_id]
+        else:
+            await ctx.send("A guessing game isn't running in this channel!")
 
     # @command()
     # async def endless(self, ctx):

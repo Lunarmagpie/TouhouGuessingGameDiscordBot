@@ -12,7 +12,7 @@ class ViewCharacterCog:
         self.bot = bot
 
     @command(description="View a character")
-    async def view_character(self, name: CommandArg[
+    async def character(self, name: CommandArg[
         str,
         Description["Character name"]  # type: ignore # noqa: F722
     ]):
