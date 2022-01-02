@@ -2,6 +2,7 @@ from .guessing_game import GuessingGame, guessing_game_channel_lock
 import discord
 import time
 
+
 class EndlessGuessingGame(GuessingGame):
     def __init__(self, channel, bot, author):
         super().__init__(channel, bot, author)
@@ -20,14 +21,16 @@ class EndlessGuessingGame(GuessingGame):
         return super().check_guess(msg)
 
     async def send_game_ended_by_user_embed(self):
-        embed = discord.Embed(title=f"The game was ended!", color = 0x3B88C3, description=f"The character is **{self.char['name']}**.")
+        embed = discord.Embed(title=f"The game was ended!", color=0x3B88C3,
+                              description=f"The character is **{self.char['name']}**.")
         embed.set_image(url=self.char["image"])
         if not self.response_recieved_during_game:
             embed.set_footer(text="Endless mode has ended!")
         await self.channel.send(embed=embed)
 
     async def send_timeout_embed(self):
-        embed = discord.Embed(title=f"Time's up!", color = 0xDD2E44, description=f"The character is **{self.char['name']}**.")
+        embed = discord.Embed(title=f"Time's up!", color=0xDD2E44,
+                              description=f"The character is **{self.char['name']}**.")
         embed.set_image(url=self.char["image"])
         if not self.response_recieved_during_game:
             embed.set_footer(text="Endless mode has ended!")

@@ -1,27 +1,33 @@
+import random
+import time
+import math
+import asyncio
+from secrets import token_urlsafe
+
+from pincer.commands import Button, ActionRow
 from pincer.client import Client
+from pincer.commands.components.button import ButtonStyle
 from pincer.exceptions import TimeoutError
 from pincer.objects import Embed
 from pincer.objects.guild.channel import Channel
 from pincer.objects.message.context import MessageContext
+from pincer.objects.message.message import Message
 from pincer.objects.user.user import User
 
 from ..config import CHARACTER_DATBASE
 from app.util import scoreboard
 from app.util import characters
 from app.nicknames import nicknames
-import random
-import time
-import math
-import asyncio
 
 guessing_game_channel_lock = {}
 
 
 class GuessingGame():
-    def __init__(self, ctx: MessageContext, channel: Channel, bot: Client, author: User) -> None:
+    def __init__(self, cog, ctx: MessageContext, channel: Channel, bot: Client, author: User) -> None:
         self.ctx = ctx
         self.channel = channel
 
+        self.cog = cog
         self.bot = bot
         self.author = author
 
@@ -40,8 +46,17 @@ class GuessingGame():
         embed = Embed(title=title, color=0x3B88C3,
                       description="Guess by typing the character's name in chat.")
         embed.set_image(url=self.char["silhouette"])
-        embed.set_footer(text="Type 't.stop' to stop the game!")
-        await self.ctx.send(embed)
+
+        await self.ctx.send(
+            Message(
+                embeds=[embed],
+                components=[
+                    ActionRow(
+                        self.cog.end_game_button
+                    )
+                ]
+            )
+        )
 
     async def send_correct_guess_embed(self, msg):
         embed = Embed(title="Correct!", color=0x78B159,
@@ -158,3 +173,8 @@ class GuessingGame():
 
         self.game_loop = asyncio.create_task(self.game_loop(custom_title))
         await self.game_loop
+
+    async def end_game_button(self):
+        print("here")
+        self.end_game()
+        return "Ended the guessing game"
